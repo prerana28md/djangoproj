@@ -1,0 +1,56 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Shopping Cart</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        {% if cart_items %}
+            {% for item in cart_items %}
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" class="img-fluid rounded-start" alt="{{ item.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.name }}</h5>
+                            <p class="card-text">
+                                <strong>Price:</strong> ${{ item.price }}<br>
+                                <strong>Seller:</strong> {{ item.seller.username }}
+                            </p>
+                            <a href="{% url 'marketplace:remove_from_cart' item.pk %}" class="btn btn-danger">Remove</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Cart Summary</h5>
+                <p class="card-text">
+                    <strong>Total Items:</strong> {{ cart_items|length }}<br>
+                    <strong>Total Price:</strong> ${{ total_price|default:"0.00" }}
+                </p>
+                <a href="{% url 'marketplace:list' %}" class="btn btn-primary">Continue Shopping</a>
+                {% if cart_items %}
+                <a href="#" class="btn btn-success">Checkout</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

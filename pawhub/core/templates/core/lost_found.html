@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Lost & Found Pets</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Lost Pets</h2>
+                </div>
+                <div class="card-body">
+                    <p>If you've lost your pet, please check our listings or create a new one.</p>
+                    <a href="{% url 'core:listing_list' %}" class="btn btn-primary">View Lost Pet Listings</a>
+                    <a href="{% url 'core:listing_create' %}" class="btn btn-success">Report Lost Pet</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>Found Pets</h2>
+                </div>
+                <div class="card-body">
+                    <p>If you've found a pet, please check our listings or create a new one.</p>
+                    <a href="{% url 'core:listing_list' %}" class="btn btn-primary">View Found Pet Listings</a>
+                    <a href="{% url 'core:listing_create' %}" class="btn btn-success">Report Found Pet</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2>Tips for Lost & Found Pets</h2>
+        </div>
+        <div class="card-body">
+            <h3>If Your Pet is Lost:</h3>
+            <ul>
+                <li>Create a detailed listing with recent photos</li>
+                <li>Include your contact information</li>
+                <li>Mention any distinctive features or behaviors</li>
+                <li>Check local shelters and veterinary clinics</li>
+                <li>Post on social media and community boards</li>
+            </ul>
+            
+            <h3>If You Found a Pet:</h3>
+            <ul>
+                <li>Check for identification tags or microchips</li>
+                <li>Create a found pet listing with photos</li>
+                <li>Contact local shelters and veterinary clinics</li>
+                <li>Post on social media and community boards</li>
+                <li>Keep the pet safe while searching for the owner</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} 

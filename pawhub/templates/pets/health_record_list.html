@@ -1,0 +1,75 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ pet.name }}'s Health Records - PawHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'pets:pet_list' %}">My Pets</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'pets:pet_detail' pet.pk %}">{{ pet.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Health Records</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>{{ pet.name }}'s Health Records</h1>
+                <a href="{% url 'pets:health_record_create' pet.pk %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Record
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {% if health_records %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Notes</th>
+                                <th>Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in health_records %}
+                            <tr>
+                                <td>{{ record.date|date:"F j, Y" }}</td>
+                                <td>{{ record.type }}</td>
+                                <td>{{ record.description }}</td>
+                                <td>{{ record.notes|truncatewords:20 }}</td>
+                                <td>
+                                    {% if record.document %}
+                                        <a href="{{ record.document.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <i class="fas fa-file"></i> View
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">No document</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No health records found for {{ pet.name }}. 
+                    <a href="{% url 'pets:health_record_create' pet.pk %}">Add the first record</a>!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

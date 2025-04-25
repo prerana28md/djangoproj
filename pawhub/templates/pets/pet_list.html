@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}My Pets - PawHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>My Pets</h1>
+            <a href="{% url 'pets:pet_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Pet
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if pets %}
+            {% for pet in pets %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if pet.image %}
+                        <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-paw fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ pet.name }}</h5>
+                        <p class="card-text">
+                            <strong>Species:</strong> {{ pet.species }}<br>
+                            <strong>Breed:</strong> {{ pet.breed }}<br>
+                            <strong>Age:</strong> {{ pet.age }} years
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'pets:pet_detail' pet.pk %}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'pets:pet_update' pet.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'pets:pet_delete' pet.pk %}" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    You haven't added any pets yet. <a href="{% url 'pets:pet_create' %}">Add your first pet</a>!
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

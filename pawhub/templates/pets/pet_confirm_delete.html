@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Delete {{ pet.name }} - PawHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'pets:pet_list' %}">My Pets</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'pets:pet_detail' pet.pk %}">{{ pet.name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Delete</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h2>Delete Pet</h2>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to delete <strong>{{ pet.name }}</strong>? This action cannot be undone.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Yes, delete this pet</button>
+                            <a href="{% url 'pets:pet_detail' pet.pk %}" class="btn btn-outline-secondary">No, take me back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

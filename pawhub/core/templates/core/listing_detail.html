@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">{{ listing.pet.name }}</h1>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Listing Type:</strong> {{ listing.get_listing_type_display }}</p>
+                    <p><strong>Status:</strong> {{ listing.get_status_display }}</p>
+                    <p><strong>Price:</strong> ${{ listing.price }}</p>
+                    <p><strong>Posted On:</strong> {{ listing.created_at|date:"F j, Y" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Pet Details:</strong></p>
+                    <ul>
+                        <li>Species: {{ listing.pet.species }}</li>
+                        <li>Breed: {{ listing.pet.breed }}</li>
+                        <li>Age: {{ listing.pet.age }} years</li>
+                        <li>Gender: {{ listing.pet.gender }}</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <h4>Description</h4>
+                <p>{{ listing.description }}</p>
+            </div>
+            
+            <div class="mt-3">
+                <a href="{% url 'core:listing_list' %}" class="btn btn-secondary">Back to List</a>
+                <a href="{% url 'core:listing_update' listing.pk %}" class="btn btn-warning">Edit</a>
+                <a href="{% url 'core:listing_delete' listing.pk %}" class="btn btn-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,110 @@
+{% extends 'base/base.html' %}
+
+{% block title %}PawHub - Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-md-6">
+            <h1 class="display-4">Welcome to PawHub</h1>
+            <p class="lead">Your one-stop platform for all things pets. Find your perfect companion, connect with veterinary professionals, and shop for pet essentials.</p>
+            <div class="mt-4">
+                <a href="{% url 'pets:list' %}" class="btn btn-primary btn-lg me-2">Find a Pet</a>
+                <a href="{% url 'users:register' %}" class="btn btn-outline-primary btn-lg">Join Our Community</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/hero-image.jpg' %}" alt="Happy pets" class="img-fluid rounded">
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2>Why Choose PawHub?</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-paw fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">Pet Adoption</h3>
+                    <p class="card-text">Find your perfect pet companion through our verified adoption listings.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-hospital fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">Vet Connect</h3>
+                    <p class="card-text">Connect with trusted veterinary professionals in your area.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">Marketplace</h3>
+                    <p class="card-text">Shop for pet essentials from verified sellers in our marketplace.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Listings -->
+    <div class="row py-5">
+        <div class="col-12 mb-4">
+            <h2>Latest Pet Listings</h2>
+        </div>
+        {% for pet in latest_pets %}
+        <div class="col-md-4 mb-4">
+            <div class="card pet-card">
+                <img src="{{ pet.image.url }}" class="card-img-top pet-image" alt="{{ pet.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pet.name }}</h5>
+                    <p class="card-text">{{ pet.breed }} • {{ pet.age }} years old</p>
+                    <a href="{% url 'pets:detail' pet.id %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">No pets available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Testimonials -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2>What Our Users Say</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-text">"PawHub helped me find the perfect companion for my family. The process was smooth and the support was amazing!"</p>
+                    <footer class="blockquote-footer">Sarah M.</footer>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-text">"As a veterinary professional, PawHub has helped me connect with more pet owners and provide better care."</p>
+                    <footer class="blockquote-footer">Dr. James K.</footer>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-text">"The marketplace is fantastic! I found everything I needed for my new puppy at great prices."</p>
+                    <footer class="blockquote-footer">Michael R.</footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

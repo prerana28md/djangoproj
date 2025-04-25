@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Lost & Found</h1>
+    <a href="{% url 'lost_found:create' %}" class="btn btn-primary mb-3">Report Lost/Found Item</a>
+    
+    <div class="row">
+        {% for item in items %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.title }}</h5>
+                    <p class="card-text">
+                        <span class="badge {% if item.status == 'lost' %}bg-danger{% else %}bg-success{% endif %}">
+                            {{ item.get_status_display }}
+                        </span>
+                    </p>
+                    <p class="card-text">{{ item.description|truncatewords:30 }}</p>
+                    <p class="card-text"><small class="text-muted">Location: {{ item.location }}</small></p>
+                    <p class="card-text"><small class="text-muted">Date: {{ item.date }}</small></p>
+                    <a href="{% url 'lost_found:detail' item.pk %}" class="btn btn-info">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p>No lost or found items reported yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,41 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-4">{{ item.name }}</h1>
+        {% if item.image %}
+        <img src="{{ item.image.url }}" class="img-fluid mb-4" alt="{{ item.name }}">
+        {% endif %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Item Details</h5>
+                <p class="card-text">
+                    <strong>Category:</strong> {{ item.get_category_display }}<br>
+                    <strong>Price:</strong> ${{ item.price }}<br>
+                    <strong>Seller:</strong> {{ item.seller.username }}<br>
+                    <strong>Posted:</strong> {{ item.created_at|date:"F j, Y" }}
+                </p>
+                <h6>Description:</h6>
+                <p class="card-text">{{ item.description }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Actions</h5>
+                {% if item.seller == user %}
+                <a href="{% url 'marketplace:update' item.pk %}" class="btn btn-warning btn-block mb-2">Edit Item</a>
+                <a href="{% url 'marketplace:delete' item.pk %}" class="btn btn-danger btn-block mb-2">Delete Item</a>
+                {% else %}
+                <a href="{% url 'marketplace:add_to_cart' item.pk %}" class="btn btn-success btn-block mb-2">Add to Cart</a>
+                {% endif %}
+                <a href="{% url 'marketplace:list' %}" class="btn btn-secondary btn-block">Back to Marketplace</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

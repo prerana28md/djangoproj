@@ -1,0 +1,82 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ pet.name }} - PawHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'pets:pet_list' %}">My Pets</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ pet.name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                {% if pet.image %}
+                    <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}">
+                {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                        <i class="fas fa-paw fa-5x text-muted"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'pets:pet_update' pet.pk %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Pet
+                        </a>
+                        <a href="{% url 'pets:pet_delete' pet.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete Pet
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2>{{ pet.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Species:</strong> {{ pet.species }}</p>
+                            <p><strong>Breed:</strong> {{ pet.breed }}</p>
+                            <p><strong>Age:</strong> {{ pet.age }} years</p>
+                            <p><strong>Gender:</strong> {{ pet.gender }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Added:</strong> {{ pet.created_at|date:"F j, Y" }}</p>
+                            <p><strong>Last Updated:</strong> {{ pet.updated_at|date:"F j, Y" }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5>Description</h5>
+                    <p>{{ pet.description|default:"No description provided." }}</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>Health Records</h3>
+                    <a href="{% url 'pets:health_record_create' pet.pk %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Record
+                    </a>
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'pets:health_record_list' pet.pk %}" class="btn btn-outline-primary">
+                        View All Health Records
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
