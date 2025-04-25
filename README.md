@@ -1,0 +1,2 @@
+# djangoproj
+DBMS MINI PROJECT
