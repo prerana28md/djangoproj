@@ -4,10 +4,13 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .models import Pet, Listing, Hospital, HealthRecord, MarketplaceItem
-from .forms import PetForm, ListingForm, MarketplaceItemForm, CustomUserCreationForm
+from .models import Pet, Listing, HealthRecord, MarketplaceItem
+from .forms import PetForm, ListingForm, HealthRecordForm, MarketplaceItemForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.paginator import Paginator
+from django.db.models import Q
+from users.forms import UserRegistrationForm
 
 # ----------------------
 # 🐶 Pet Views
@@ -15,7 +18,7 @@ from django.contrib.auth.forms import AuthenticationForm
 
 @login_required
 def pet_list(request):
-    pets = Pet.objects.filter(owner=request.user)
+    pets = Pet.objects.all()  # Show all pets instead of filtering by owner
     return render(request, 'core/pet_list.html', {'pets': pets})
 
 @login_required
@@ -34,7 +37,17 @@ def pet_create(request):
 
 @login_required
 def pet_detail(request, pk):
-    pet = get_object_or_404(Pet, pk=pk, owner=request.user)
+    pet = get_object_or_404(Pet, pk=pk)
+    if request.method == 'POST' and request.user == pet.owner:
+        health_status = request.POST.get('health_status')
+        vaccination_status = request.POST.get('vaccination_status')
+        if health_status:
+            pet.health_status = health_status
+        if vaccination_status:
+            pet.vaccination_status = vaccination_status
+        pet.save()
+        messages.success(request, 'Pet information updated successfully!')
+        return redirect('core:pet_detail', pk=pk)
     return render(request, 'core/pet_detail.html', {'pet': pet})
 
 @login_required
@@ -163,23 +176,11 @@ def marketplace_item_delete(request, pk):
     if request.method == 'POST':
         item.delete()
         messages.success(request, 'Item deleted successfully!')
-        return redirect('marketplace:list')
-    return render(request, 'marketplace/item_confirm_delete.html', {'item': item})
-
-# ----------------------
-# 🏥 Hospital Views
-# ----------------------
-
-def hospital_list(request):
-    hospitals = Hospital.objects.all()
-    return render(request, 'core/hospital_list.html', {'hospitals': hospitals})
+        return redirect('core:marketplace')
+    return render(request, 'core/marketplace_item_confirm_delete.html', {'item': item})
 
 def lost_found(request):
-    """View for the lost and found pets page."""
-    return render(request, 'core/lost_found.html', {
-        'title': 'Lost & Found Pets',
-        'active_page': 'lost_found'
-    })
+    return render(request, 'core/lost_found.html')
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -208,7 +209,7 @@ def logout_view(request):
     return redirect('core:home')
 
 class SignUpView(CreateView):
-    form_class = CustomUserCreationForm
+    form_class = UserRegistrationForm
     success_url = reverse_lazy('core:login')
     template_name = 'core/signup.html'
 

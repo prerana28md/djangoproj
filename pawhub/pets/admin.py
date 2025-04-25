@@ -7,6 +7,7 @@ class PetAdmin(admin.ModelAdmin):
     list_filter = ('species', 'gender')
     search_fields = ('name', 'breed', 'owner__username')
     date_hierarchy = 'created_at'
+    actions = ['delete_selected']
 
 @admin.register(HealthRecord)
 class HealthRecordAdmin(admin.ModelAdmin):

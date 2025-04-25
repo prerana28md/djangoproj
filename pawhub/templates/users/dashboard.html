@@ -8,17 +8,32 @@
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">
+                    <h3>Profile Information</h3>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>Username:</strong> {{ user.username }}<br>
+                        <strong>Email:</strong> {{ user.email }}<br>
+                        <strong>Phone:</strong> {{ user.phone_number }}<br>
+                        <strong>Address:</strong> {{ user.address }}
+                    </p>
+                    <a href="{% url 'users:profile' %}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header">
                     <h3>Quick Actions</h3>
                 </div>
                 <div class="card-body">
                     <div class="list-group">
-                        <a href="{% url 'pets:create' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'pets:pet_create' %}" class="list-group-item list-group-item-action">
                             <i class="fas fa-plus-circle me-2"></i>Add New Pet
                         </a>
                         <a href="{% url 'marketplace:create' %}" class="list-group-item list-group-item-action">
                             <i class="fas fa-shopping-cart me-2"></i>List Item in Marketplace
                         </a>
-                        <a href="{% url 'lost_found:create' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'lost_found:report_create' %}" class="list-group-item list-group-item-action">
                             <i class="fas fa-search me-2"></i>Report Lost/Found Pet
                         </a>
                     </div>
@@ -37,11 +52,13 @@
                             {% for pet in pets %}
                             <div class="col-md-6 mb-3">
                                 <div class="card">
-                                    <img src="{{ pet.image.url }}" class="card-img-top pet-image" alt="{{ pet.name }}">
+                                    {% if pet.image %}
+                                        <img src="{{ pet.image.url }}" class="card-img-top pet-image" alt="{{ pet.name }}">
+                                    {% endif %}
                                     <div class="card-body">
                                         <h5 class="card-title">{{ pet.name }}</h5>
                                         <p class="card-text">{{ pet.breed }} • {{ pet.age }} years old</p>
-                                        <a href="{% url 'pets:detail' pet.id %}" class="btn btn-primary">View Details</a>
+                                        <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-primary">View Details</a>
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +93,7 @@
                                         <td>{{ listing.pet.name }}</td>
                                         <td>{{ listing.status }}</td>
                                         <td>
-                                            <a href="{% url 'pets:detail' listing.pet.id %}" class="btn btn-sm btn-primary">View</a>
+                                            <a href="{% url 'pets:pet_detail' listing.pet.id %}" class="btn btn-sm btn-primary">View</a>
                                         </td>
                                     </tr>
                                     {% endfor %}

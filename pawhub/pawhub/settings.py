@@ -83,12 +83,8 @@ WSGI_APPLICATION = "pawhub.wsgi.application"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pawhub_db',
-        'USER': 'root',
-        'PASSWORD': 'Root@123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -148,13 +144,13 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'home'
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'  # Replace with your email
-EMAIL_HOST_PASSWORD = 'your-app-password'  # Replace with your app password
-DEFAULT_FROM_EMAIL = 'your-email@gmail.com'  # Replace with your email
+EMAIL_HOST_USER = 'raksham0205@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'your-app-password'  # You'll need to generate an App Password from Google
+DEFAULT_FROM_EMAIL = 'raksham0205@gmail.com'  # Your Gmail address
 
 # Site URL
 SITE_URL = 'http://localhost:8000'

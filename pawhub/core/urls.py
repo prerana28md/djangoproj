@@ -25,6 +25,5 @@ urlpatterns = [
     path('marketplace/<int:pk>/', views.marketplace_item_detail, name='marketplace_item_detail'),
     path('marketplace/<int:pk>/update/', views.marketplace_item_update, name='marketplace_item_update'),
     path('marketplace/<int:pk>/delete/', views.marketplace_item_delete, name='marketplace_item_delete'),
-    path('hospitals/', views.hospital_list, name='hospitals'),
     path('lost-found/', views.lost_found, name='lost_found'),
 ]

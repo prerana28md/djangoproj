@@ -10,8 +10,8 @@
                     <p class="card-text">
                         <strong>Username:</strong> {{ user.username }}<br>
                         <strong>Email:</strong> {{ user.email }}<br>
-                        <strong>Phone:</strong> {{ profile.phone_number }}<br>
-                        <strong>Location:</strong> {{ profile.location }}
+                        <strong>Phone:</strong> {{ user.phone_number }}<br>
+                        <strong>Address:</strong> {{ user.address }}
                     </p>
                     <a href="{% url 'users:profile' %}" class="btn btn-primary">Edit Profile</a>
                 </div>

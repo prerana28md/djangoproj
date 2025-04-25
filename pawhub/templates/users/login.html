@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block title %}Login - PawHub{% endblock %}
 
@@ -30,6 +31,7 @@
                     </form>
                     <div class="text-center mt-3">
                         <p>Don't have an account? <a href="{% url 'users:register' %}">Register here</a></p>
+                        <p><a href="{% url 'users:password_reset' %}">Forgot your password?</a></p>
                     </div>
                 </div>
             </div>

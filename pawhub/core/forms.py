@@ -1,7 +1,5 @@
 from django import forms
-from .models import Pet, Listing, MarketplaceItem
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from .models import Pet, Listing, HealthRecord, MarketplaceItem
 
 class PetForm(forms.ModelForm):
     class Meta:
@@ -18,8 +16,9 @@ class ListingForm(forms.ModelForm):
         model = Listing
         fields = ['pet', 'listing_type', 'status']
         widgets = {
-            'listing_type': forms.Select(),
-            'status': forms.Select(),
+            'listing_type': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'pet': forms.Select(attrs={'class': 'form-select'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -27,30 +26,24 @@ class ListingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if user:
             self.fields['pet'].queryset = Pet.objects.filter(owner=user)
+            self.fields['pet'].empty_label = "Select a pet"
+            self.fields['pet'].label = "Pet"
+
+class HealthRecordForm(forms.ModelForm):
+    class Meta:
+        model = HealthRecord
+        fields = ['record_date', 'description']
+        widgets = {
+            'record_date': forms.DateInput(attrs={'type': 'date'}),
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
 
 class MarketplaceItemForm(forms.ModelForm):
     class Meta:
         model = MarketplaceItem
-        fields = ['name', 'category', 'price', 'description']
+        fields = ['name', 'category', 'price', 'description', 'image']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
-            'price': forms.NumberInput(attrs={'min': '0', 'step': '0.01'})
+            'price': forms.NumberInput(attrs={'min': '0', 'step': '0.01'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'})
         }
-
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(max_length=30, required=True)
-    last_name = forms.CharField(max_length=30, required=True)
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        if commit:
-            user.save()
-        return user

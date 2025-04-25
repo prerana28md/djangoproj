@@ -32,22 +32,6 @@
                 </div>
                 
                 <div class="mb-3">
-                    <label for="id_description" class="form-label">Description</label>
-                    {{ form.description }}
-                    {% if form.description.errors %}
-                        <div class="alert alert-danger">{{ form.description.errors }}</div>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="id_price" class="form-label">Price</label>
-                    {{ form.price }}
-                    {% if form.price.errors %}
-                        <div class="alert alert-danger">{{ form.price.errors }}</div>
-                    {% endif %}
-                </div>
-                
-                <div class="mb-3">
                     <label for="id_status" class="form-label">Status</label>
                     {{ form.status }}
                     {% if form.status.errors %}

@@ -34,10 +34,38 @@
                                     <strong>Age:</strong> {{ pet.age }} years
                                 </li>
                                 <li class="list-group-item">
-                                    <strong>Health Status:</strong> {{ pet.get_health_status_display }}
+                                    <strong>Health Status:</strong> 
+                                    {% if pet.owner == user %}
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <select name="health_status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                                {% for value, label in pet.HEALTH_STATUS_CHOICES %}
+                                                    <option value="{{ value }}" {% if pet.health_status == value %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                    {% else %}
+                                        {{ pet.get_health_status_display }}
+                                    {% endif %}
                                 </li>
                                 <li class="list-group-item">
-                                    <strong>Vaccination Status:</strong> {{ pet.get_vaccination_status_display }}
+                                    <strong>Vaccination Status:</strong>
+                                    {% if pet.owner == user %}
+                                        <form method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <select name="vaccination_status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                                {% for value, label in pet.VACCINATION_STATUS_CHOICES %}
+                                                    <option value="{{ value }}" {% if pet.vaccination_status == value %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                    {% else %}
+                                        {{ pet.get_vaccination_status_display }}
+                                    {% endif %}
                                 </li>
                                 <li class="list-group-item">
                                     <strong>Owner:</strong> {{ pet.owner.username }}

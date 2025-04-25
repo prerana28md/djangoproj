@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ hospital.name }} - PawHub{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'hospitals:list' %}">Hospitals</a></li>
+            <li class="breadcrumb-item active">{{ hospital.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Hospital Information -->
+        <div class="col-md-8">
+            <div class="card">
+                {% if hospital.image %}
+                <img src="{{ hospital.image.url }}" class="card-img-top" alt="{{ hospital.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="card-title">{{ hospital.name }}</h2>
+                        <div class="btn-group">
+                            <a href="{% url 'hospitals:update' hospital.pk %}" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'hospitals:delete' hospital.pk %}" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="hospital-info">
+                        <p><i class="fas fa-map-marker-alt"></i> <strong>Address:</strong> {{ hospital.address }}</p>
+                        <p><i class="fas fa-phone"></i> <strong>Contact:</strong> {{ hospital.contact }}</p>
+                        {% if hospital.email %}
+                        <p><i class="fas fa-envelope"></i> <strong>Email:</strong> {{ hospital.email }}</p>
+                        {% endif %}
+                        {% if hospital.website %}
+                        <p><i class="fas fa-globe"></i> <strong>Website:</strong> <a href="{{ hospital.website }}" target="_blank">{{ hospital.website }}</a></p>
+                        {% endif %}
+                    </div>
+
+                    {% if hospital.description %}
+                    <div class="mt-4">
+                        <h4>About</h4>
+                        <p>{{ hospital.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Doctors</h3>
+                    <a href="{% url 'core:doctor_create' hospital.pk %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Add Doctor
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if doctors %}
+                    <div class="list-group">
+                        {% for doctor in doctors %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">Dr. {{ doctor.name }}</h5>
+                                    <p class="mb-1"><small>{{ doctor.get_specialization_display }}</small></p>
+                                </div>
+                                <div class="btn-group">
+                                    <a href="{% url 'core:doctor_update' doctor.pk %}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'core:doctor_delete' doctor.pk %}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No doctors added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

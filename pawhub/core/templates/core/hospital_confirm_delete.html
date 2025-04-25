@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Hospital - PawHub{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Delete Hospital</h4>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Are you sure you want to delete "{{ hospital.name }}"?</p>
+                    <p class="text-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        This action cannot be undone. All associated doctors will also be deleted.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Yes, delete hospital
+                            </button>
+                            <a href="{% url 'hospitals:detail' hospital.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
