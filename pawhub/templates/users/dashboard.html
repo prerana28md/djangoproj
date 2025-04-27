@@ -4,105 +4,35 @@
 
 {% block content %}
 <div class="container">
+    <h1 class="mb-4">Dashboard</h1>
+    
     <div class="row">
         <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Profile Information</h3>
-                </div>
                 <div class="card-body">
-                    <p class="card-text">
-                        <strong>Username:</strong> {{ user.username }}<br>
-                        <strong>Email:</strong> {{ user.email }}<br>
-                        <strong>Phone:</strong> {{ user.phone_number }}<br>
-                        <strong>Address:</strong> {{ user.address }}
-                    </p>
-                    <a href="{% url 'users:profile' %}" class="btn btn-primary">Edit Profile</a>
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Quick Actions</h3>
-                </div>
-                <div class="card-body">
-                    <div class="list-group">
-                        <a href="{% url 'pets:pet_create' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-plus-circle me-2"></i>Add New Pet
-                        </a>
-                        <a href="{% url 'marketplace:create' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-shopping-cart me-2"></i>List Item in Marketplace
-                        </a>
-                        <a href="{% url 'lost_found:report_create' %}" class="list-group-item list-group-item-action">
-                            <i class="fas fa-search me-2"></i>Report Lost/Found Pet
-                        </a>
-                    </div>
+                    <h5 class="card-title">My Profile</h5>
+                    <p class="card-text">View and update your profile information.</p>
+                    <a href="{% url 'users:profile' %}" class="btn btn-primary">Go to Profile</a>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-8">
+        <div class="col-md-4">
             <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Your Pets</h3>
-                </div>
                 <div class="card-body">
-                    {% if pets %}
-                        <div class="row">
-                            {% for pet in pets %}
-                            <div class="col-md-6 mb-3">
-                                <div class="card">
-                                    {% if pet.image %}
-                                        <img src="{{ pet.image.url }}" class="card-img-top pet-image" alt="{{ pet.name }}">
-                                    {% endif %}
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ pet.name }}</h5>
-                                        <p class="card-text">{{ pet.breed }} • {{ pet.age }} years old</p>
-                                        <a href="{% url 'pets:pet_detail' pet.id %}" class="btn btn-primary">View Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-center">You haven't added any pets yet.</p>
-                    {% endif %}
+                    <h5 class="card-title">My Pets</h5>
+                    <p class="card-text">Manage your pets and view their details.</p>
+                    <a href="{% url 'pets:pet_list' %}" class="btn btn-primary">View Pets</a>
                 </div>
             </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h3>Your Listings</h3>
-                </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
                 <div class="card-body">
-                    {% if listings %}
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Type</th>
-                                        <th>Pet</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for listing in listings %}
-                                    <tr>
-                                        <td>{{ listing.listing_type }}</td>
-                                        <td>{{ listing.pet.name }}</td>
-                                        <td>{{ listing.status }}</td>
-                                        <td>
-                                            <a href="{% url 'pets:pet_detail' listing.pet.id %}" class="btn btn-sm btn-primary">View</a>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-center">You don't have any active listings.</p>
-                    {% endif %}
+                    <h5 class="card-title">Marketplace</h5>
+                    <p class="card-text">Browse and manage your marketplace listings.</p>
+                    <a href="{% url 'marketplace:list' %}" class="btn btn-primary">View Marketplace</a>
                 </div>
             </div>
         </div>

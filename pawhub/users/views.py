@@ -11,8 +11,10 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .forms import UserRegistrationForm, UserProfileForm
 import uuid
-from .models import User
+from .models import User, UserProfile
 from .tokens import account_activation_token
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.urls import reverse_lazy
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -70,26 +72,26 @@ def verify_email(request, token):
 
 @login_required
 def profile(request):
-    if not request.user.is_authenticated:
-        messages.error(request, 'Please log in to view your profile.')
-        return redirect('users:login')
+    """User profile view"""
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = UserProfile.objects.create(user=request.user)
+    
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Profile updated successfully!')
+            messages.success(request, 'Your profile has been updated!')
             return redirect('users:profile')
     else:
-        form = UserProfileForm(instance=request.user)
-    return render(request, 'users/profile.html', {'form': form})
-
-@login_required
-def dashboard(request):
-    """User dashboard view showing overview of their activities"""
+        form = UserProfileForm(instance=profile)
+    
     context = {
-        'user': request.user,
+        'form': form,
+        'profile': profile
     }
-    return render(request, 'users/dashboard.html', context)
+    return render(request, 'users/profile.html', context)
 
 def password_reset_request(request):
     if request.method == 'POST':
@@ -139,3 +141,11 @@ def password_reset_confirm(request, uidb64, token):
     else:
         messages.error(request, 'The password reset link is invalid or has expired.')
         return redirect('users:login')
+
+@login_required
+def dashboard(request):
+    """User dashboard view showing overview of their activities"""
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'users/dashboard.html', context)
