@@ -12,6 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/logo.svg' %}">
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -20,7 +21,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container">
             <a class="navbar-brand" href="{% url 'core:home' %}">
-                <i class="fas fa-paw"></i> PawHub
+                <img src="{% static 'img/logo.svg' %}" alt="PawHub Logo" style="height:32px; width:auto; vertical-align:middle; margin-right:8px;"> PawHub
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
