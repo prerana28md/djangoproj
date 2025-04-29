@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Pets for Sale</h1>
+        {% if user.is_authenticated %}
+            <a href="{% url 'marketplace:pet_listing_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> List a Pet for Sale
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        {% for listing in listings %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if listing.pet.image %}
+                        <img src="{{ listing.pet.image.url }}" class="card-img-top" alt="{{ listing.pet.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-paw fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ listing.pet.name }}</h5>
+                        <p class="card-text text-muted">{{ listing.pet.get_species_display }} - {{ listing.pet.breed }}</p>
+                        <p class="card-text"><strong>${{ listing.price }}</strong></p>
+                        <p class="card-text">{{ listing.description|truncatechars:100 }}</p>
+                    </div>
+                    
+                    <div class="card-footer bg-white">
+                        <a href="{% url 'marketplace:pet_listing_detail' listing.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No pets available for sale at the moment.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

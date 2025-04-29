@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import MarketplaceItem
-from .forms import MarketplaceItemForm
+from .models import MarketplaceItem, PetListing
+from .forms import MarketplaceItemForm, PetListingForm
 
 @login_required
 def marketplace_item_list(request):
@@ -77,3 +77,49 @@ def add_to_cart(request, item_id):
 def remove_from_cart(request, item_id):
     # Remove item from cart logic here
     return redirect('marketplace:cart')
+
+@login_required
+def pet_listing_list(request):
+    listings = PetListing.objects.filter(status='available')
+    return render(request, 'marketplace/pet_listing_list.html', {'listings': listings})
+
+@login_required
+def pet_listing_create(request):
+    if request.method == 'POST':
+        form = PetListingForm(request.POST, user=request.user)
+        if form.is_valid():
+            listing = form.save()
+            messages.success(request, 'Pet listed successfully!')
+            return redirect('marketplace:pet_listing_detail', pk=listing.pk)
+    else:
+        form = PetListingForm(user=request.user)
+    return render(request, 'marketplace/pet_listing_form.html', {
+        'form': form,
+        'title': 'List Pet for Sale'
+    })
+
+@login_required
+def pet_listing_detail(request, pk):
+    listing = get_object_or_404(PetListing, pk=pk)
+    return render(request, 'marketplace/pet_listing_detail.html', {'listing': listing})
+
+@login_required
+def pet_listing_purchase(request, pk):
+    listing = get_object_or_404(PetListing, pk=pk)
+    
+    if listing.status != 'available':
+        messages.error(request, 'This pet is no longer available for purchase.')
+        return redirect('marketplace:pet_listing_detail', pk=pk)
+    
+    if listing.seller == request.user:
+        messages.error(request, 'You cannot purchase your own pet.')
+        return redirect('marketplace:pet_listing_detail', pk=pk)
+    
+    if request.method == 'POST':
+        listing.status = 'pending'
+        listing.buyer = request.user
+        listing.save()
+        messages.success(request, 'Purchase request sent successfully!')
+        return redirect('marketplace:pet_listing_detail', pk=pk)
+    
+    return render(request, 'marketplace/pet_listing_confirm_purchase.html', {'listing': listing})

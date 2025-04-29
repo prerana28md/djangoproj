@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">{{ listing.pet.name }}</h2>
+                </div>
+                <div class="card-body">
+                    {% if listing.pet.image %}
+                        <img src="{{ listing.pet.image.url }}" class="img-fluid rounded mb-3" alt="{{ listing.pet.name }}" style="max-height: 400px; width: 100%; object-fit: cover;">
+                    {% else %}
+                        <div class="text-center mb-3">
+                            <i class="fas fa-paw fa-5x text-muted"></i>
+                            <p class="text-muted">No image available</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <h5>Species & Breed</h5>
+                        <p>{{ listing.pet.get_species_display }} - {{ listing.pet.breed }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Age & Gender</h5>
+                        <p>{{ listing.pet.age }} years old - {{ listing.pet.get_gender_display }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Price</h5>
+                        <p class="h4 text-primary">${{ listing.price }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Description</h5>
+                        <p>{{ listing.description }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Pet Description</h5>
+                        <p>{{ listing.pet.description }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Seller</h5>
+                        <p>{{ listing.seller.username }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Status</h5>
+                        <p class="badge {% if listing.status == 'available' %}bg-success{% elif listing.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                            {{ listing.get_status_display }}
+                        </p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5>Posted</h5>
+                        <p>{{ listing.created_at|date:"F j, Y" }}</p>
+                    </div>
+                    
+                    {% if user.is_authenticated and listing.status == 'available' and listing.seller != user %}
+                        <a href="{% url 'marketplace:pet_listing_purchase' listing.pk %}" class="btn btn-primary">
+                            Purchase Pet
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

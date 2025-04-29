@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Confirm Purchase</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if listing.pet.image %}
+                            <img src="{{ listing.pet.image.url }}" class="img-fluid rounded" alt="{{ listing.pet.name }}" style="max-height: 300px; width: auto;">
+                        {% else %}
+                            <i class="fas fa-paw fa-5x text-muted"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <h4 class="text-center mb-4">{{ listing.pet.name }}</h4>
+                    
+                    <div class="alert alert-info">
+                        <h5>Purchase Details</h5>
+                        <p><strong>Price:</strong> ${{ listing.price }}</p>
+                        <p><strong>Seller:</strong> {{ listing.seller.username }}</p>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h5>Important Information</h5>
+                        <p>By proceeding with this purchase, you agree to:</p>
+                        <ul>
+                            <li>Pay the listed price of ${{ listing.price }}</li>
+                            <li>Arrange for pet transfer with the seller</li>
+                            <li>Take full responsibility for the pet after purchase</li>
+                        </ul>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Confirm Purchase</button>
+                            <a href="{% url 'marketplace:pet_listing_detail' listing.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -30,9 +30,19 @@
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Marketplace</h5>
+                    <h5 class="card-title">Pet Supplies</h5>
                     <p class="card-text">Browse and manage your marketplace listings.</p>
-                    <a href="{% url 'marketplace:list' %}" class="btn btn-primary">View Marketplace</a>
+                    <a href="{% url 'marketplace:list' %}" class="btn btn-primary">View Supplies</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Pet Marketplace</h5>
+                    <p class="card-text">Buy and sell pets in our marketplace.</p>
+                    <a href="{% url 'marketplace:pet_listing_list' %}" class="btn btn-primary">View Pets for Sale</a>
                 </div>
             </div>
         </div>
