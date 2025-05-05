@@ -21,7 +21,16 @@ class UserLoginForm(AuthenticationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email', 'phone_number', 'address', 'profile_picture', 'bio')
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-lg'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'address': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3}),
+            'bio': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control form-control-lg'}),
+        }
         
     def clean_email(self):
         email = self.cleaned_data.get('email')

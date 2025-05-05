@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from pets.models import Pet
+from core.models import Pet
 
 # Create your models here.
 

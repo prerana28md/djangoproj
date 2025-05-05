@@ -85,6 +85,7 @@ def pet_listing_list(request):
 
 @login_required
 def pet_listing_create(request):
+    print(f"Creating pet listing for user: {request.user.username}")
     if request.method == 'POST':
         form = PetListingForm(request.POST, user=request.user)
         if form.is_valid():

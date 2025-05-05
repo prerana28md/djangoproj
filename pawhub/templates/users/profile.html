@@ -7,16 +7,76 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Profile</h2>
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Profile Information</h2>
                 </div>
                 <div class="card-body">
-                    <form method="post" class="needs-validation" novalidate>
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-center">
+                            {% if profile.profile_picture %}
+                                <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px; margin: 0 auto;">
+                                    <i class="fas fa-user fa-4x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <h4>{{ user.get_full_name|default:user.username }}</h4>
+                            <p class="text-muted">{{ user.email }}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <h5>About Me</h5>
+                                <p class="text-muted">{{ profile.bio|default:"No bio provided." }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h5>Contact Information</h5>
+                                <p><i class="fas fa-phone me-2"></i> {{ profile.phone_number|default:"Not provided" }}</p>
+                                <p><i class="fas fa-map-marker-alt me-2"></i> {{ profile.address|default:"Not provided" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h5>Account Information</h5>
+                                <p><i class="fas fa-calendar me-2"></i> Member since: {{ user.created_at|date:"F j, Y" }}</p>
+                                <p><i class="fas fa-clock me-2"></i> Last updated: {{ profile.updated_at|date:"F j, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h4 class="mb-3">Update Profile</h4>
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                         {% csrf_token %}
-                        {{ form|crispy }}
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.email|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.phone_number|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.profile_picture|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.address|as_crispy_field }}
+                            </div>
+                            <div class="col-12">
+                                {{ form.bio|as_crispy_field }}
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex justify-content-between">
+                            <a href="{% url 'users:dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Profile
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -24,4 +84,25 @@
         </div>
     </div>
 </div>
+
+<style>
+    .form-control:focus, .form-select:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    .card {
+        border-radius: 15px;
+    }
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+    }
+    .form-label {
+        font-weight: 500;
+    }
+    .profile-picture {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+</style>
 {% endblock %} 

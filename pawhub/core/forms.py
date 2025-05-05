@@ -4,21 +4,33 @@ from .models import Pet, Listing, HealthRecord, MarketplaceItem
 class PetForm(forms.ModelForm):
     class Meta:
         model = Pet
-        fields = ['name', 'type', 'breed', 'age', 'health_status', 'vaccination_status', 'image']
+        fields = ['name', 'type', 'breed', 'age', 'gender', 'health_status', 'vaccination_status', 'image']
         widgets = {
-            'health_status': forms.Textarea(attrs={'rows': 3}),
-            'vaccination_status': forms.TextInput(attrs={'placeholder': 'e.g. Fully vaccinated'}),
-            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter pet name'}),
+            'type': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'breed': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter breed'}),
+            'age': forms.NumberInput(attrs={'class': 'form-control form-control-lg', 'min': '0', 'max': '100'}),
+            'gender': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'health_status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'vaccination_status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'image': forms.FileInput(attrs={'class': 'form-control form-control-lg'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['type'].choices = Pet.PET_TYPES
+        self.fields['gender'].choices = Pet.GENDER_CHOICES
+        self.fields['health_status'].choices = Pet.HEALTH_STATUS_CHOICES
+        self.fields['vaccination_status'].choices = Pet.VACCINATION_STATUS_CHOICES
 
 class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         fields = ['pet', 'listing_type', 'status']
         widgets = {
-            'listing_type': forms.Select(attrs={'class': 'form-select'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-            'pet': forms.Select(attrs={'class': 'form-select'}),
+            'listing_type': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'pet': forms.Select(attrs={'class': 'form-select form-select-lg'}),
         }
 
     def __init__(self, *args, **kwargs):

@@ -13,6 +13,12 @@ class Pet(models.Model):
         ('other', 'Other'),
     ]
 
+    GENDER_CHOICES = [
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('unknown', 'Unknown'),
+    ]
+
     HEALTH_STATUS_CHOICES = [
         ('excellent', 'Excellent'),
         ('good', 'Good'),
@@ -32,6 +38,7 @@ class Pet(models.Model):
     type = models.CharField(max_length=50, choices=PET_TYPES)
     breed = models.CharField(max_length=100)
     age = models.PositiveIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default='unknown')
     health_status = models.CharField(max_length=20, choices=HEALTH_STATUS_CHOICES, default='good')
     vaccination_status = models.CharField(max_length=20, choices=VACCINATION_STATUS_CHOICES, default='unknown')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
