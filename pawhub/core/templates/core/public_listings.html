@@ -8,125 +8,193 @@
 <style>
     .pet-list-container {
         padding: 2rem 0;
+        background: #f8f9fa;
+        min-height: 100vh;
     }
     .search-filter-section {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         margin-bottom: 2rem;
     }
     .search-box {
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .search-box input {
+        border: none;
+        padding: 0.8rem 1.2rem;
+    }
+    .search-box button {
+        border: none;
+        padding: 0.8rem 1.5rem;
+        background: #2196F3;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .search-box button:hover {
+        background: #1976D2;
     }
     .filter-section select {
+        border: none;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        border-radius: 12px;
+        padding: 0.8rem 1.2rem;
+        background: white;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .filter-section select:hover {
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     .pet-grid {
         display: flex;
         flex-wrap: wrap;
-        gap: 1.5rem;
+        gap: 2rem;
         justify-content: center;
+        padding: 1rem;
     }
     .pet-card {
         width: 300px;
         border: none;
-        border-radius: 15px;
+        border-radius: 20px;
         overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        background: white;
     }
     .pet-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
     }
     .pet-image {
         height: 200px;
         object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    .pet-card:hover .pet-image {
+        transform: scale(1.05);
     }
     .pet-info {
         padding: 1.5rem;
+        position: relative;
     }
     .listing-type-badge {
         position: absolute;
-        top: 1rem;
+        top: -15px;
         right: 1rem;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .listing-type-badge.adoption {
-        background: #28a745;
+        background: #4CAF50;
         color: white;
     }
     .listing-type-badge.sale {
-        background: #007bff;
+        background: #2196F3;
         color: white;
     }
     .listing-type-badge.exchange {
-        background: #ffc107;
-        color: #000;
+        background: #FF9800;
+        color: white;
     }
     .pet-name {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-weight: 600;
         margin-bottom: 1rem;
         color: #2c3e50;
     }
     .pet-details {
         margin-bottom: 1.5rem;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 12px;
     }
     .pet-details p {
         margin-bottom: 0.5rem;
         color: #6c757d;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
     }
     .pet-details i {
         width: 20px;
-        color: #007bff;
+        color: #2196F3;
         margin-right: 0.5rem;
+        font-size: 0.9rem;
     }
     .view-details-btn {
         width: 100%;
         padding: 0.8rem;
-        border-radius: 10px;
+        border-radius: 12px;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.5px;
         transition: all 0.3s ease;
+        background: #2196F3;
+        border: none;
+        color: white;
     }
     .view-details-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        box-shadow: 0 5px 15px rgba(33,150,243,0.3);
+        background: #1976D2;
     }
     .no-pets-message {
         text-align: center;
         padding: 3rem;
-        background: #f8f9fa;
-        border-radius: 15px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        margin: 2rem auto;
+        max-width: 600px;
     }
     .no-pets-message i {
         font-size: 3rem;
-        color: #007bff;
+        color: #2196F3;
         margin-bottom: 1rem;
     }
     .pagination {
         margin-top: 2rem;
     }
     .page-link {
-        border-radius: 5px;
+        border-radius: 10px;
         margin: 0 3px;
         border: none;
-        color: #007bff;
+        color: #2196F3;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .page-link:hover {
+        background: #E3F2FD;
+        color: #1976D2;
     }
     .page-item.active .page-link {
-        background: #007bff;
+        background: #2196F3;
         color: white;
+    }
+    .apply-filters-btn {
+        background: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .apply-filters-btn:hover {
+        background: #1976D2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(33,150,243,0.2);
     }
 </style>
 {% endblock %}
@@ -138,7 +206,7 @@
             <div class="col-md-4">
                 <div class="input-group search-box">
                     <input type="text" name="search" class="form-control" placeholder="Search by name or breed..." value="{{ request.GET.search }}">
-                    <button class="btn btn-outline-primary" type="submit">
+                    <button class="btn" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -174,7 +242,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                        <button type="submit" class="btn apply-filters-btn w-100">Apply Filters</button>
                     </div>
                 </div>
             </div>
@@ -203,7 +271,7 @@
                     <p><i class="fas fa-tag"></i> Price: ${{ listing.pet.price }}</p>
                     {% endif %}
                 </div>
-                <a href="{% url 'core:pet_detail' listing.pet.id %}" class="btn btn-primary view-details-btn">View Details</a>
+                <a href="{% url 'core:pet_detail' listing.pet.id %}" class="btn view-details-btn">View Details</a>
             </div>
         </div>
         {% endfor %}

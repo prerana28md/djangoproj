@@ -1,0 +1,247 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Found Pets - PawHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .found-pets-container {
+        padding: 2rem 0;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    .search-filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+    .search-box {
+        position: relative;
+    }
+    .search-box input {
+        padding-right: 3rem;
+        border-radius: 8px;
+    }
+    .search-box button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        border-radius: 0 8px 8px 0;
+    }
+    .filter-section {
+        display: flex;
+        gap: 1rem;
+    }
+    .pet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    .pet-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .pet-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .pet-image {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .pet-info {
+        padding: 1.5rem;
+    }
+    .pet-name {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .pet-details {
+        margin-bottom: 1.5rem;
+    }
+    .pet-details p {
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+    .pet-details p i {
+        width: 20px;
+        margin-right: 0.5rem;
+        color: #2196F3;
+    }
+    .view-details-btn {
+        width: 100%;
+        border-radius: 8px;
+        padding: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .view-details-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(33,150,243,0.2);
+    }
+    .no-pets-message {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .no-pets-message i {
+        font-size: 3rem;
+        color: #2196F3;
+        margin-bottom: 1rem;
+    }
+    .no-pets-message h3 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    .no-pets-message p {
+        color: #6c757d;
+    }
+    .pagination {
+        margin-top: 2rem;
+        justify-content: center;
+    }
+    .page-link {
+        color: #2196F3;
+        border: none;
+        margin: 0 0.2rem;
+        border-radius: 8px;
+    }
+    .page-item.active .page-link {
+        background: #2196F3;
+        color: white;
+    }
+    .page-link:hover {
+        background: #e3f2fd;
+        color: #1976D2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container found-pets-container">
+    <div class="search-filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <div class="input-group search-box">
+                    <input type="text" name="search" class="form-control" placeholder="Search by title or description..." value="{{ request.GET.search }}">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row filter-section">
+                    <div class="col-md-4">
+                        <select name="date" class="form-select">
+                            <option value="">All Dates</option>
+                            <option value="today" {% if request.GET.date == 'today' %}selected{% endif %}>Today</option>
+                            <option value="week" {% if request.GET.date == 'week' %}selected{% endif %}>This Week</option>
+                            <option value="month" {% if request.GET.date == 'month' %}selected{% endif %}>This Month</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="location" class="form-select">
+                            <option value="">All Locations</option>
+                            <option value="north" {% if request.GET.location == 'north' %}selected{% endif %}>North</option>
+                            <option value="south" {% if request.GET.location == 'south' %}selected{% endif %}>South</option>
+                            <option value="east" {% if request.GET.location == 'east' %}selected{% endif %}>East</option>
+                            <option value="west" {% if request.GET.location == 'west' %}selected{% endif %}>West</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if found_pets %}
+    <div class="pet-grid">
+        {% for pet in found_pets %}
+        <div class="card pet-card">
+            {% if pet.image %}
+            <img src="{{ pet.image.url }}" class="pet-image" alt="{{ pet.title }}">
+            {% else %}
+            <img src="{% static 'core/images/default_pet.jpg' %}" class="pet-image" alt="Default Pet Image">
+            {% endif %}
+            <div class="card-body pet-info">
+                <h5 class="card-title pet-name">{{ pet.title }}</h5>
+                <div class="pet-details">
+                    <p><i class="fas fa-map-marker-alt"></i> {{ pet.location }}</p>
+                    <p><i class="fas fa-calendar"></i> {{ pet.date }}</p>
+                    <p><i class="fas fa-user"></i> Posted by {{ pet.user.username }}</p>
+                </div>
+                <a href="{% url 'core:found_pet_detail' pet.id %}" class="btn btn-primary view-details-btn">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="no-pets-message">
+        <i class="fas fa-paw"></i>
+        <h3>No found pets reported</h3>
+        <p>Check back later for new reports or try adjusting your search criteria.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

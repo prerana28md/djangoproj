@@ -2,11 +2,11 @@
 {% load crispy_forms_tags %}
 {% load static %}
 
-{% block title %}Report Found Pet - PawHub{% endblock %}
+{% block title %}Report Lost Pet - PawHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .found-pet-form-container {
+    .lost-pet-form-container {
         padding: 2rem 0;
         background: #f8f9fa;
         min-height: 100vh;
@@ -90,13 +90,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container found-pet-form-container">
+<div class="container lost-pet-form-container">
     <div class="row">
         <div class="col-md-8 offset-md-2">
             <div class="form-card">
                 <div class="form-header">
-                    <h2>Report Found Pet</h2>
-                    <p>Help reunite a lost pet with its family by providing as much information as possible</p>
+                    <h2>Report Lost Pet</h2>
+                    <p>Help us find your lost pet by providing as much information as possible</p>
                 </div>
 
                 <form method="POST" enctype="multipart/form-data">
@@ -104,12 +104,13 @@
                     
                     <div class="form-section">
                         <h4><i class="fas fa-paw"></i> Pet Information</h4>
+                        {{ form.pet|as_crispy_field }}
                         {{ form.title|as_crispy_field }}
                         {{ form.description|as_crispy_field }}
                     </div>
 
                     <div class="form-section">
-                        <h4><i class="fas fa-map-marker-alt"></i> Found Location Information</h4>
+                        <h4><i class="fas fa-map-marker-alt"></i> Location Information</h4>
                         {{ form.location|as_crispy_field }}
                         {{ form.date|as_crispy_field }}
                     </div>
@@ -117,13 +118,13 @@
                     <div class="form-section">
                         <h4><i class="fas fa-camera"></i> Pet Image</h4>
                         {{ form.image|as_crispy_field }}
-                        <small class="form-text">Please provide a clear photo of the found pet if available.</small>
+                        <small class="form-text">Please provide a clear photo of your pet if available.</small>
                     </div>
 
                     <div class="form-section">
                         <h4><i class="fas fa-user"></i> Contact Information</h4>
                         {{ form.contact_info|as_crispy_field }}
-                        <small class="form-text">Please provide your contact information so the pet's owner can reach you.</small>
+                        <small class="form-text">Please provide your contact information so we can reach you when your pet is found.</small>
                     </div>
 
                     <div class="row">

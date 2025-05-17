@@ -1,0 +1,196 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ pet.title }} - Found Pet - PawHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pet-detail-container {
+        padding: 2rem 0;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    .pet-detail-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    .pet-image-section {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+    }
+    .pet-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .pet-info-section {
+        padding: 2rem;
+    }
+    .pet-title {
+        color: #2c3e50;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .info-item {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    .info-item h4 {
+        color: #2196F3;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+    .info-item p {
+        color: #2c3e50;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    .description-section {
+        margin-bottom: 2rem;
+    }
+    .description-section h3 {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .description-section p {
+        color: #6c757d;
+        line-height: 1.6;
+    }
+    .contact-section {
+        background: #e3f2fd;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+    .contact-section h3 {
+        color: #1976D2;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .contact-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    .contact-item {
+        display: flex;
+        align-items: center;
+        color: #0d47a1;
+    }
+    .contact-item i {
+        width: 24px;
+        margin-right: 0.5rem;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    .btn-back {
+        background: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-back:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    .btn-edit {
+        background: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-edit:hover {
+        background: #1976D2;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container pet-detail-container">
+    <div class="pet-detail-card">
+        <div class="pet-image-section">
+            {% if pet.image %}
+            <img src="{{ pet.image.url }}" class="pet-image" alt="{{ pet.title }}">
+            {% else %}
+            <img src="{% static 'core/images/default_pet.jpg' %}" class="pet-image" alt="Default Pet Image">
+            {% endif %}
+        </div>
+        <div class="pet-info-section">
+            <h1 class="pet-title">{{ pet.title }}</h1>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <h4>Location</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> {{ pet.location }}</p>
+                </div>
+                <div class="info-item">
+                    <h4>Date Found</h4>
+                    <p><i class="fas fa-calendar"></i> {{ pet.date }}</p>
+                </div>
+                <div class="info-item">
+                    <h4>Reported By</h4>
+                    <p><i class="fas fa-user"></i> {{ pet.user.username }}</p>
+                </div>
+            </div>
+
+            <div class="description-section">
+                <h3>Description</h3>
+                <p>{{ pet.description }}</p>
+            </div>
+
+            <div class="contact-section">
+                <h3>Contact Information</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-user"></i>
+                        <span>{{ pet.user.get_full_name|default:pet.user.username }}</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>{{ pet.user.email }}</span>
+                    </div>
+                    {% if pet.contact_info %}
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>{{ pet.contact_info }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'core:found_pet_list' %}" class="btn btn-back">
+                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                </a>
+                {% if user == pet.user %}
+                <a href="{% url 'core:found_pet_update' pet.id %}" class="btn btn-edit">
+                    <i class="fas fa-edit me-2"></i>Edit Report
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
