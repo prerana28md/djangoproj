@@ -2,59 +2,82 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="mb-4">Lost & Found Pets</h1>
+    <h1 class="text-center mb-4">Lost & Found</h1>
     
-    <div class="row">
+    <!-- Lost Pet Section -->
+    <div class="row mb-5">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h2>Lost Pets</h2>
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">Lost Your Pet?</h3>
                 </div>
                 <div class="card-body">
-                    <p>If you've lost your pet, please check our listings or create a new one.</p>
-                    <a href="{% url 'core:listing_list' %}" class="btn btn-primary">View Lost Pet Listings</a>
-                    <a href="{% url 'core:listing_create' %}" class="btn btn-success">Report Lost Pet</a>
+                    <h5 class="card-title">Guidelines for Lost Pets:</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check-circle text-danger"></i> Provide accurate details about your pet</li>
+                        <li><i class="fas fa-check-circle text-danger"></i> Include last seen location and time</li>
+                        <li><i class="fas fa-check-circle text-danger"></i> Add clear photos if available</li>
+                        <li><i class="fas fa-check-circle text-danger"></i> Keep contact information updated</li>
+                    </ul>
+                    <p class="text-muted">Don't worry! We'll help you find your beloved pet.</p>
+                    <a href="{% url 'core:lost_pet_create' %}" class="btn btn-danger w-100 mt-3">
+                        <i class="fas fa-search me-2"></i>Report Lost Pet
+                    </a>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Found Pet Section -->
         <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h2>Found Pets</h2>
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Found a Pet?</h3>
                 </div>
                 <div class="card-body">
-                    <p>If you've found a pet, please check our listings or create a new one.</p>
-                    <a href="{% url 'core:listing_list' %}" class="btn btn-primary">View Found Pet Listings</a>
-                    <a href="{% url 'core:listing_create' %}" class="btn btn-success">Report Found Pet</a>
+                    <h5 class="card-title">Guidelines for Found Pets:</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check-circle text-success"></i> Provide location where pet was found</li>
+                        <li><i class="fas fa-check-circle text-success"></i> Describe the pet's condition</li>
+                        <li><i class="fas fa-check-circle text-success"></i> Add photos if possible</li>
+                        <li><i class="fas fa-check-circle text-success"></i> Keep the pet safe until claimed</li>
+                    </ul>
+                    <p class="text-muted">Help reunite lost pets with their families!</p>
+                    <a href="{% url 'core:found_pet_create' %}" class="btn btn-success w-100 mt-3">
+                        <i class="fas fa-paw me-2"></i>Report Found Pet
+                    </a>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-header">
-            <h2>Tips for Lost & Found Pets</h2>
-        </div>
-        <div class="card-body">
-            <h3>If Your Pet is Lost:</h3>
-            <ul>
-                <li>Create a detailed listing with recent photos</li>
-                <li>Include your contact information</li>
-                <li>Mention any distinctive features or behaviors</li>
-                <li>Check local shelters and veterinary clinics</li>
-                <li>Post on social media and community boards</li>
-            </ul>
-            
-            <h3>If You Found a Pet:</h3>
-            <ul>
-                <li>Check for identification tags or microchips</li>
-                <li>Create a found pet listing with photos</li>
-                <li>Contact local shelters and veterinary clinics</li>
-                <li>Post on social media and community boards</li>
-                <li>Keep the pet safe while searching for the owner</li>
-            </ul>
         </div>
     </div>
 </div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.card-header {
+    border-radius: 5px 5px 0 0;
+}
+.btn {
+    border-radius: 5px;
+    padding: 12px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+.btn:hover {
+    transform: scale(1.02);
+}
+.list-unstyled li {
+    margin-bottom: 10px;
+    padding-left: 5px;
+}
+.fas {
+    margin-right: 8px;
+}
+</style>
 {% endblock %} 

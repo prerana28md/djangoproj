@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{% extends "core/base.html" %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -48,6 +49,24 @@
                                 <div class="alert alert-danger mt-2">{{ form.status.errors }}</div>
                             {% endif %}
                         </div>
+
+                        <!-- Lost Pet Fields -->
+                        <div id="lost-pet-fields" class="mb-4" style="display: none;">
+                            <div class="mb-3">
+                                <label for="id_last_seen_location" class="form-label">Last Seen Location</label>
+                                {{ form.last_seen_location }}
+                                {% if form.last_seen_location.errors %}
+                                    <div class="alert alert-danger mt-2">{{ form.last_seen_location.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_lost_date" class="form-label">Lost Date</label>
+                                {{ form.lost_date }}
+                                {% if form.lost_date.errors %}
+                                    <div class="alert alert-danger mt-2">{{ form.lost_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                         
                         <div class="mt-4 d-flex justify-content-between">
                             <a href="{% url 'core:listing_list' %}" class="btn btn-outline-secondary">
@@ -79,4 +98,25 @@
         font-weight: 500;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const listingTypeSelect = document.getElementById('id_listing_type');
+    const lostPetFields = document.getElementById('lost-pet-fields');
+    
+    function toggleLostPetFields() {
+        if (listingTypeSelect.value === 'lost') {
+            lostPetFields.style.display = 'block';
+        } else {
+            lostPetFields.style.display = 'none';
+        }
+    }
+    
+    // Initial check
+    toggleLostPetFields();
+    
+    // Listen for changes
+    listingTypeSelect.addEventListener('change', toggleLostPetFields);
+});
+</script>
 {% endblock %}

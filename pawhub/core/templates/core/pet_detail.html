@@ -1,104 +1,135 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ pet.name }} - PawHub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'pets/css/pet_detail.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container pet-detail-container">
     <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">{{ pet.name }}</h2>
+        <div class="col-md-6">
+            {% if pet.image %}
+            <img src="{{ pet.image.url }}" class="img-fluid rounded pet-detail-image" alt="{{ pet.name }}">
+            {% else %}
+            <img src="{% static 'pets/images/default_pet.jpg' %}" class="img-fluid rounded pet-detail-image" alt="Default Pet Image">
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            <div class="pet-info-card">
+                <h1 class="pet-name">{{ pet.name }}</h1>
+                <div class="listing-type-badge {% if listing.listing_type == 'adoption' %}adoption{% elif listing.listing_type == 'sale' %}sale{% else %}exchange{% endif %}">
+                    {{ listing.get_listing_type_display }}
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            {% if pet.image %}
-                                <img src="{{ pet.image.url }}" class="img-fluid rounded" alt="{{ pet.name }}" style="max-height: 400px; object-fit: cover;">
-                            {% else %}
-                                <div class="text-center py-5 bg-light rounded">
-                                    <i class="fas fa-paw fa-5x text-muted"></i>
-                                    <p class="mt-2">No image available</p>
+                <div class="pet-details">
+                    <p><i class="fas fa-paw"></i> Type: {{ pet.get_type_display }}</p>
+                    <p><i class="fas fa-dna"></i> Breed: {{ pet.breed }}</p>
+                    <p><i class="fas fa-birthday-cake"></i> Age: {{ pet.age }} years old</p>
+                    <p><i class="fas fa-venus-mars"></i> Gender: {{ pet.get_gender_display }}</p>
+                    <p><i class="fas fa-heartbeat"></i> Health Status: {{ pet.get_health_status_display }}</p>
+                    <p><i class="fas fa-syringe"></i> Vaccination Status: {{ pet.get_vaccination_status_display }}</p>
+                    {% if listing.listing_type == 'sale' %}
+                    <p><i class="fas fa-tag"></i> Price: ${{ listing.price }}</p>
+                    {% endif %}
+                </div>
+                <div class="pet-description">
+                    <h4>Description</h4>
+                    <p>{{ pet.description }}</p>
+                </div>
+
+                {% if user.is_authenticated %}
+                    {% if user != pet.owner %}
+                        {% if listing.listing_type == 'adoption' %}
+                            {% if adoption_request %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    You have already submitted an adoption request for this pet.
+                                    <div class="mt-2">
+                                        Status: <span class="badge {% if adoption_request.status == 'pending' %}bg-warning{% elif adoption_request.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ adoption_request.get_status_display }}
+                                        </span>
+                                    </div>
                                 </div>
+                            {% else %}
+                                <a href="{% url 'core:adoption_request_create' pet.id %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-heart"></i> Request Adoption
+                                </a>
                             {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <h4 class="mb-3">Pet Details</h4>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <strong>Type:</strong> {{ pet.get_type_display }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Breed:</strong> {{ pet.breed }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Age:</strong> {{ pet.age }} years
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Health Status:</strong> 
-                                    {% if pet.owner == user %}
-                                        <form method="post" class="d-inline">
-                                            {% csrf_token %}
-                                            <select name="health_status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
-                                                {% for value, label in pet.HEALTH_STATUS_CHOICES %}
-                                                    <option value="{{ value }}" {% if pet.health_status == value %}selected{% endif %}>
-                                                        {{ label }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </form>
-                                    {% else %}
-                                        {{ pet.get_health_status_display }}
-                                    {% endif %}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Vaccination Status:</strong>
-                                    {% if pet.owner == user %}
-                                        <form method="post" class="d-inline">
-                                            {% csrf_token %}
-                                            <select name="vaccination_status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
-                                                {% for value, label in pet.VACCINATION_STATUS_CHOICES %}
-                                                    <option value="{{ value }}" {% if pet.vaccination_status == value %}selected{% endif %}>
-                                                        {{ label }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </form>
-                                    {% else %}
-                                        {{ pet.get_vaccination_status_display }}
-                                    {% endif %}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Owner:</strong> {{ pet.owner.username }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Added:</strong> {{ pet.created_at|date:"F j, Y" }}
-                                </li>
-                                <li class="list-group-item">
-                                    <strong>Last Updated:</strong> {{ pet.updated_at|date:"F j, Y" }}
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'core:pet_list' %}" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to List
-                        </a>
-                        {% if user == pet.owner %}
-                            <div>
-                                <a href="{% url 'core:pet_update' pet.id %}" class="btn btn-primary">
-                                    <i class="fas fa-edit"></i> Edit
+                        {% elif listing.listing_type == 'sale' %}
+                            <form method="post" action="{% url 'core:add_to_cart' listing.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-shopping-cart"></i> Buy Now
+                                </button>
+                            </form>
+                        {% elif listing.listing_type == 'exchange' %}
+                            {% if adoption_request %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    You have already submitted an exchange request for this pet.
+                                    <div class="mt-2">
+                                        Status: <span class="badge {% if adoption_request.status == 'pending' %}bg-warning{% elif adoption_request.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ adoption_request.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'core:adoption_request_create' pet.id %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-exchange-alt"></i> Request Exchange
                                 </a>
-                                <a href="{% url 'core:pet_delete' pet.id %}" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
-                            </div>
+                            {% endif %}
                         {% endif %}
+                    {% else %}
+                        <div class="owner-actions">
+                            <a href="{% url 'core:pet_update' pet.id %}" class="btn btn-outline-primary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'core:pet_delete' pet.id %}" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Please <a href="{% url 'users:login' %}">log in</a> to interact with this listing.
                     </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if health_records %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="health-records-card">
+                <h3>Health Records</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in health_records %}
+                            <tr>
+                                <td>{{ record.record_date }}</td>
+                                <td>{{ record.get_record_type_display }}</td>
+                                <td>{{ record.notes }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %} 

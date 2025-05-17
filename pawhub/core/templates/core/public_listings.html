@@ -1,0 +1,264 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Available Pets - PawHub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .pet-list-container {
+        padding: 2rem 0;
+    }
+    .search-filter-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+    .search-box {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .filter-section select {
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .pet-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+    }
+    .pet-card {
+        width: 300px;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .pet-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .pet-image {
+        height: 200px;
+        object-fit: cover;
+    }
+    .pet-info {
+        padding: 1.5rem;
+    }
+    .listing-type-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .listing-type-badge.adoption {
+        background: #28a745;
+        color: white;
+    }
+    .listing-type-badge.sale {
+        background: #007bff;
+        color: white;
+    }
+    .listing-type-badge.exchange {
+        background: #ffc107;
+        color: #000;
+    }
+    .pet-name {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+    .pet-details {
+        margin-bottom: 1.5rem;
+    }
+    .pet-details p {
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+    .pet-details i {
+        width: 20px;
+        color: #007bff;
+        margin-right: 0.5rem;
+    }
+    .view-details-btn {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 10px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+    }
+    .view-details-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+    }
+    .no-pets-message {
+        text-align: center;
+        padding: 3rem;
+        background: #f8f9fa;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    }
+    .no-pets-message i {
+        font-size: 3rem;
+        color: #007bff;
+        margin-bottom: 1rem;
+    }
+    .pagination {
+        margin-top: 2rem;
+    }
+    .page-link {
+        border-radius: 5px;
+        margin: 0 3px;
+        border: none;
+        color: #007bff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .page-item.active .page-link {
+        background: #007bff;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container pet-list-container">
+    <div class="search-filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <div class="input-group search-box">
+                    <input type="text" name="search" class="form-control" placeholder="Search by name or breed..." value="{{ request.GET.search }}">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row filter-section">
+                    <div class="col-md-3">
+                        <select name="type" class="form-select">
+                            <option value="">All Listings</option>
+                            <option value="adoption" {% if current_type == 'adoption' %}selected{% endif %}>For Adoption</option>
+                            <option value="sale" {% if current_type == 'sale' %}selected{% endif %}>For Sale</option>
+                            <option value="exchange" {% if current_type == 'exchange' %}selected{% endif %}>For Exchange</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="species" class="form-select">
+                            <option value="">All Types</option>
+                            <option value="dog" {% if request.GET.species == 'dog' %}selected{% endif %}>Dogs</option>
+                            <option value="cat" {% if request.GET.species == 'cat' %}selected{% endif %}>Cats</option>
+                            <option value="bird" {% if request.GET.species == 'bird' %}selected{% endif %}>Birds</option>
+                            <option value="fish" {% if request.GET.species == 'fish' %}selected{% endif %}>Fish</option>
+                            <option value="reptile" {% if request.GET.species == 'reptile' %}selected{% endif %}>Reptiles</option>
+                            <option value="other" {% if request.GET.species == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="age_range" class="form-select">
+                            <option value="">All Ages</option>
+                            <option value="0-1" {% if request.GET.age_range == '0-1' %}selected{% endif %}>0-1 years</option>
+                            <option value="1-3" {% if request.GET.age_range == '1-3' %}selected{% endif %}>1-3 years</option>
+                            <option value="3-5" {% if request.GET.age_range == '3-5' %}selected{% endif %}>3-5 years</option>
+                            <option value="5+" {% if request.GET.age_range == '5+' %}selected{% endif %}>5+ years</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if listings %}
+    <div class="pet-grid">
+        {% for listing in listings %}
+        <div class="card pet-card">
+            {% if listing.pet.image %}
+            <img src="{{ listing.pet.image.url }}" class="card-img-top pet-image" alt="{{ listing.pet.name }}">
+            {% else %}
+            <img src="{% static 'core/images/default_pet.jpg' %}" class="card-img-top pet-image" alt="Default Pet Image">
+            {% endif %}
+            <div class="card-body pet-info">
+                <div class="listing-type-badge {% if listing.listing_type == 'adoption' %}adoption{% elif listing.listing_type == 'sale' %}sale{% else %}exchange{% endif %}">
+                    {{ listing.get_listing_type_display }}
+                </div>
+                <h5 class="card-title pet-name">{{ listing.pet.name }}</h5>
+                <div class="pet-details">
+                    <p><i class="fas fa-paw"></i> {{ listing.pet.get_type_display }}</p>
+                    <p><i class="fas fa-dna"></i> {{ listing.pet.breed }}</p>
+                    <p><i class="fas fa-birthday-cake"></i> {{ listing.pet.age }} years old</p>
+                    {% if listing.listing_type == 'sale' and listing.pet.price %}
+                    <p><i class="fas fa-tag"></i> Price: ${{ listing.pet.price }}</p>
+                    {% endif %}
+                </div>
+                <a href="{% url 'core:pet_detail' listing.pet.id %}" class="btn btn-primary view-details-btn">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="no-pets-message">
+        <i class="fas fa-paw"></i>
+        <h3>No pets available</h3>
+        <p>Check back later for new listings or try adjusting your search criteria.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -47,10 +47,15 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Species:</strong> {{ pet.species }}</p>
+                            <p><strong>Species:</strong> {{ pet.get_species_display }}</p>
                             <p><strong>Breed:</strong> {{ pet.breed }}</p>
                             <p><strong>Age:</strong> {{ pet.age }} years</p>
-                            <p><strong>Gender:</strong> {{ pet.gender }}</p>
+                            <p><strong>Gender:</strong> {{ pet.get_gender_display }}</p>
+                            <p><strong>Adoption Status:</strong> 
+                                <span class="badge {% if pet.adoption_status == 'available' %}bg-success{% elif pet.adoption_status == 'pending' %}bg-warning{% else %}bg-info{% endif %}">
+                                    {{ pet.get_adoption_status_display }}
+                                </span>
+                            </p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Added:</strong> {{ pet.created_at|date:"F j, Y" }}</p>

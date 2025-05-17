@@ -12,10 +12,4 @@ urlpatterns = [
     path('cart/', views.cart, name='cart'),
     path('cart/add/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
-    
-    # Pet listing URLs
-    path('pets/', views.pet_listing_list, name='pet_listing_list'),
-    path('pets/create/', views.pet_listing_create, name='pet_listing_create'),
-    path('pets/<int:pk>/', views.pet_listing_detail, name='pet_listing_detail'),
-    path('pets/<int:pk>/purchase/', views.pet_listing_purchase, name='pet_listing_purchase'),
 ] 

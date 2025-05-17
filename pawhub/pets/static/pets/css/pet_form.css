@@ -1,0 +1,107 @@
+.pet-form-container {
+    padding: 2rem 0;
+}
+
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem;
+}
+
+.card-header h2 {
+    color: #2c3e50;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.pet-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.pet-form label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.pet-form .form-control {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+}
+
+.pet-form .form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+.pet-form textarea.form-control {
+    min-height: 120px;
+}
+
+.form-actions {
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    border-color: #95a5a6;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+/* Custom file input styling */
+.custom-file-label {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    background-color: #fff;
+}
+
+.custom-file-label::after {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+    
+    .form-actions .btn-secondary {
+        margin-left: 0 !important;
+    }
+} 

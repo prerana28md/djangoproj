@@ -1,0 +1,75 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Adoption Requests - PawHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">
+        {% if is_pet_owner %}
+            Adoption Requests for Your Pets
+        {% else %}
+            Your Adoption Requests
+        {% endif %}
+    </h1>
+
+    {% if requests %}
+        <div class="row">
+            {% for request in requests %}
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ request.pet.name }}</h5>
+                            <div class="pet-details mb-3">
+                                <p><strong>Type:</strong> {{ request.pet.get_type_display }}</p>
+                                <p><strong>Breed:</strong> {{ request.pet.breed }}</p>
+                                <p><strong>Age:</strong> {{ request.pet.age }} years old</p>
+                            </div>
+
+                            {% if is_pet_owner %}
+                                <div class="requester-info mb-3">
+                                    <h6>Request from:</h6>
+                                    <p><strong>Name:</strong> {{ request.requester.get_full_name|default:request.requester.username }}</p>
+                                    <p><strong>Email:</strong> {{ request.requester.email }}</p>
+                                    <p><strong>Phone:</strong> {{ request.requester.profile.phone_number|default:"Not provided" }}</p>
+                                </div>
+                            {% endif %}
+
+                            <div class="request-details mb-3">
+                                <p><strong>Request Date:</strong> {{ request.request_date }}</p>
+                                <p><strong>Status:</strong> 
+                                    <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'approved' %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ request.get_status_display }}
+                                    </span>
+                                </p>
+                                {% if request.response_date %}
+                                    <p><strong>Response Date:</strong> {{ request.response_date }}</p>
+                                {% endif %}
+                                {% if request.response_notes %}
+                                    <p><strong>Response Notes:</strong> {{ request.response_notes }}</p>
+                                {% endif %}
+                            </div>
+
+                            {% if is_pet_owner and request.status == 'pending' %}
+                                <a href="{% url 'core:adoption_request_response' request.pk %}" class="btn btn-primary">
+                                    <i class="fas fa-reply"></i> Respond to Request
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            {% if is_pet_owner %}
+                You don't have any adoption requests for your pets.
+            {% else %}
+                You haven't submitted any adoption requests yet.
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

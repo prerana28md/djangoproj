@@ -10,7 +10,7 @@ class ListingAdmin(admin.ModelAdmin):
 
 @admin.register(MarketplaceItem)
 class MarketplaceItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'seller', 'created_at')
+    list_display = ('name', 'category', 'price', 'shop_owner', 'created_at')
     list_filter = ('category',)
-    search_fields = ('name', 'description', 'seller__username')
+    search_fields = ('name', 'description', 'shop_owner__username')
     date_hierarchy = 'created_at'

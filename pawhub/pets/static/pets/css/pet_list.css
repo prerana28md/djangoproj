@@ -1,0 +1,148 @@
+.pet-list-container {
+    padding: 2rem 0;
+}
+
+.search-filter-section {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-box {
+    max-width: 300px;
+}
+
+.filter-section {
+    margin-top: 1rem;
+}
+
+.pet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.pet-card {
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pet-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.pet-info {
+    padding: 1rem;
+}
+
+.pet-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.pet-details {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.pet-details i {
+    width: 20px;
+    color: #3498db;
+}
+
+.view-details-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #3498db;
+    border: none;
+    color: white;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.view-details-btn:hover {
+    background-color: #2980b9;
+}
+
+.pagination {
+    margin-top: 2rem;
+    justify-content: center;
+}
+
+.page-link {
+    color: #3498db;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 1rem;
+}
+
+.page-link:hover {
+    color: #2980b9;
+    background-color: #f8f9fa;
+}
+
+.page-item.active .page-link {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.no-pets-message {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-top: 2rem;
+}
+
+.no-pets-message i {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .pet-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+}
+
+.listing-type-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: white;
+    z-index: 1;
+}
+
+.listing-type-badge.adoption {
+    background-color: #2ecc71;
+}
+
+.listing-type-badge.sale {
+    background-color: #e67e22;
+}
+
+.listing-type-badge.exchange {
+    background-color: #9b59b6;
+} 

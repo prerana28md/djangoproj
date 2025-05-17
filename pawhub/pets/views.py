@@ -2,27 +2,48 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
+from django.db.models import Q
 from .models import Pet, HealthRecord
 from .forms import PetForm, HealthRecordForm
 
 # Create your views here.
 
-class PetListView(LoginRequiredMixin, ListView):
+class PetListView(ListView):
     model = Pet
     template_name = 'pets/pet_list.html'
     context_object_name = 'pets'
+    paginate_by = 9
 
     def get_queryset(self):
-        # Show all pets instead of filtering by owner
-        pets = Pet.objects.all()
-        print("\n=== Debug Information ===")
-        print(f"Current user: {self.request.user.username}")
-        print(f"Total pets in database: {pets.count()}")
-        print("\nAll pets in database:")
-        for pet in pets:
-            print(f"- {pet.name} (ID: {pet.id}, Owner: {pet.owner.username})")
-        print("=======================\n")
-        return pets
+        queryset = Pet.objects.all()
+        
+        # Search functionality
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(breed__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+        
+        # Filter by species
+        species = self.request.GET.get('species')
+        if species:
+            queryset = queryset.filter(species=species)
+        
+        # Filter by age range
+        age_range = self.request.GET.get('age')
+        if age_range:
+            if age_range == '0-1':
+                queryset = queryset.filter(age__lt=1)
+            elif age_range == '1-3':
+                queryset = queryset.filter(age__gte=1, age__lt=3)
+            elif age_range == '3-5':
+                queryset = queryset.filter(age__gte=3, age__lt=5)
+            elif age_range == '5+':
+                queryset = queryset.filter(age__gte=5)
+        
+        return queryset.order_by('-created_at')
 
 class PetDetailView(LoginRequiredMixin, DetailView):
     model = Pet

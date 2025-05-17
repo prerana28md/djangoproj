@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Adoption Requests</h2>
+    
+    {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Requester</th>
+                        <th>Request Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'core:pet_detail' request.pet.pk %}">
+                                    {{ request.pet.name }}
+                                </a>
+                            </td>
+                            <td>{{ request.requester.username }}</td>
+                            <td>{{ request.request_date|date:"M d, Y" }}</td>
+                            <td>
+                                <span class="badge {% if request.status == 'pending' %}bg-warning{% elif request.status == 'approved' %}bg-success{% elif request.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ request.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'core:adoption_request_response' request.pk %}" class="btn btn-sm btn-primary">
+                                    {% if request.status == 'pending' %}
+                                        Review
+                                    {% else %}
+                                        View Details
+                                    {% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No adoption requests found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

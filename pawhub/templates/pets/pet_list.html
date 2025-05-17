@@ -30,9 +30,13 @@
                         <h5 class="card-title">{{ pet.name }}</h5>
                         <p class="card-text">
                             <strong>Owner:</strong> {{ pet.owner.username }}<br>
-                            <strong>Species:</strong> {{ pet.species }}<br>
+                            <strong>Species:</strong> {{ pet.get_species_display }}<br>
                             <strong>Breed:</strong> {{ pet.breed }}<br>
-                            <strong>Age:</strong> {{ pet.age }} years
+                            <strong>Age:</strong> {{ pet.age }} years<br>
+                            <strong>Adoption Status:</strong> 
+                            <span class="badge {% if pet.adoption_status == 'available' %}bg-success{% elif pet.adoption_status == 'pending' %}bg-warning{% else %}bg-info{% endif %}">
+                                {{ pet.get_adoption_status_display }}
+                            </span>
                         </p>
                     </div>
                     <div class="card-footer">

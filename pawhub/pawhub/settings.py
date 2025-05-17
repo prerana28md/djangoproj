@@ -62,7 +62,15 @@ ROOT_URLCONF = "pawhub.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'pets' / 'templates',
+            BASE_DIR / 'users' / 'templates',
+            BASE_DIR / 'core' / 'templates',
+            BASE_DIR / 'marketplace' / 'templates',
+            BASE_DIR / 'hospitals' / 'templates',
+            BASE_DIR / 'lost_found' / 'templates',
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -128,6 +136,12 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
+    BASE_DIR / 'pets' / 'static',
+    BASE_DIR / 'users' / 'static',
+    BASE_DIR / 'core' / 'static',
+    BASE_DIR / 'marketplace' / 'static',
+    BASE_DIR / 'hospitals' / 'static',
+    BASE_DIR / 'lost_found' / 'static',
 ]
 
 # Media files
@@ -139,18 +153,18 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Authentication
-LOGIN_REDIRECT_URL = 'home'
-LOGIN_URL = 'login'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'core:home'
+LOGIN_URL = 'users:login'
+LOGOUT_REDIRECT_URL = 'core:home'
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'raksham0205@gmail.com'  # Your Gmail address
-EMAIL_HOST_PASSWORD = 'your-app-password'  # You'll need to generate an App Password from Google
-DEFAULT_FROM_EMAIL = 'raksham0205@gmail.com'  # Your Gmail address
+EMAIL_HOST_USER = 'raksham0205@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-password'
+DEFAULT_FROM_EMAIL = 'raksham0205@gmail.com'
 
 # Site URL
 SITE_URL = 'http://localhost:8000'

@@ -1,0 +1,91 @@
+/* General Styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Card Styles */
+.card {
+    transition: transform 0.2s;
+    margin-bottom: 1rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Form Styles */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Footer Styles */
+footer {
+    margin-top: auto;
+}
+
+footer a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #0a58ca;
+    text-decoration: underline;
+}
+
+/* Pet Card Styles */
+.pet-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Marketplace Item Styles */
+.marketplace-item img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Cart Styles */
+.cart-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+/* Profile Styles */
+.profile-header {
+    background-color: #f8f9fa;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+/* Hospital Styles */
+.hospital-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Lost & Found Styles */
+.lost-found-card img {
+    height: 200px;
+    object-fit: cover;
+} 

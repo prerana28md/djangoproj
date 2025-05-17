@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from marketplace.models import MarketplaceItem
+from core.models import MarketplaceItem
 
 class Command(BaseCommand):
     help = 'Deletes all marketplace items'

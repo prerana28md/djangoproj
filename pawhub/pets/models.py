@@ -17,12 +17,19 @@ class Pet(models.Model):
         ('unknown', 'Unknown'),
     ]
 
+    ADOPTION_STATUS_CHOICES = [
+        ('available', 'Available for Adoption'),
+        ('adopted', 'Adopted'),
+        ('pending', 'Adoption Pending'),
+    ]
+
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='pets')
     name = models.CharField(max_length=100)
     species = models.CharField(max_length=20, choices=SPECIES_CHOICES)
     breed = models.CharField(max_length=100)
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    adoption_status = models.CharField(max_length=20, choices=ADOPTION_STATUS_CHOICES, default='available')
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='pets/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
