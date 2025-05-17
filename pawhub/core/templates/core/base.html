@@ -13,6 +13,40 @@
     <!-- Custom CSS -->
     <link href="{% static 'core/css/style.css' %}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            margin-bottom: 0;
+        }
+        .container {
+            padding: 0 !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+        }
+        .navbar .container {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 15px !important;
+        }
+        footer {
+            margin-top: auto;
+        }
+        footer .container {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 15px !important;
+        }
+        main {
+            flex: 1;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -34,7 +68,7 @@
                         <a class="nav-link" href="{% url 'core:marketplace_list' %}">Marketplace</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:lost_found' %}">Lost & Found</a>
+                        <a class="nav-link" href="{% url 'core:lost_found_list' %}">Lost & Found</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'hospitals:list' %}">Hospitals</a>
@@ -84,12 +118,12 @@
     {% endif %}
 
     <!-- Main Content -->
-    <main class="container py-4">
+    <main>
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-light py-4 mt-auto">
+    <footer class="bg-light py-4">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">

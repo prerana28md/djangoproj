@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-4">
@@ -25,9 +26,9 @@
                     
                     <div class="card-body">
                         <h5 class="card-title">{{ listing.pet.name }}</h5>
-                        <p class="card-text text-muted">{{ listing.pet.get_species_display }} - {{ listing.pet.breed }}</p>
-                        <p class="card-text"><strong>${{ listing.price }}</strong></p>
-                        <p class="card-text">{{ listing.description|truncatechars:100 }}</p>
+                        <p class="card-text text-muted">{{ listing.pet.get_type_display }} - {{ listing.pet.breed }}</p>
+                        <p class="card-text"><strong>${{ listing.pet.price }}</strong></p>
+                        <p class="card-text">{{ listing.pet.description|truncatechars:100 }}</p>
                     </div>
                     
                     <div class="card-footer bg-white">
@@ -38,7 +39,7 @@
         {% empty %}
             <div class="col-12">
                 <div class="alert alert-info">
-                    No pets available for sale at the moment.
+                    <i class="fas fa-info-circle"></i> No pets are currently listed for sale.
                 </div>
             </div>
         {% endfor %}

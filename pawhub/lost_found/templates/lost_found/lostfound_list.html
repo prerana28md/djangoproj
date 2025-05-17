@@ -2,19 +2,96 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}Pets for Adoption - PawHub{% endblock %}
+{% block title %}Lost & Found Pets - PawHub{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'pets/css/pet_list.css' %}">
+<style>
+    .lost-found-container {
+        padding: 2rem 0;
+    }
+    .search-filter-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .item-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    .item-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+    .item-card:hover {
+        transform: translateY(-5px);
+    }
+    .item-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+    .item-info {
+        padding: 1.5rem;
+    }
+    .item-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .item-details {
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+    .item-details p {
+        margin-bottom: 0.5rem;
+    }
+    .item-details i {
+        width: 20px;
+        margin-right: 0.5rem;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+    .status-lost {
+        background: #ffc107;
+        color: #000;
+    }
+    .status-found {
+        background: #28a745;
+        color: #fff;
+    }
+    .no-items-message {
+        text-align: center;
+        padding: 3rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    .no-items-message i {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container pet-list-container">
+<div class="container lost-found-container">
     <div class="search-filter-section">
         <form method="get" class="row g-3">
             <div class="col-md-4">
                 <div class="input-group search-box">
-                    <input type="text" name="search" class="form-control" placeholder="Search by name or breed..." value="{{ request.GET.search }}">
+                    <input type="text" name="search" class="form-control" placeholder="Search by title or location..." value="{{ request.GET.search }}">
                     <button class="btn btn-outline-primary" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
@@ -23,24 +100,14 @@
             <div class="col-md-8">
                 <div class="row filter-section">
                     <div class="col-md-4">
-                        <select name="species" class="form-select">
-                            <option value="">All Types</option>
-                            <option value="dog" {% if request.GET.species == 'dog' %}selected{% endif %}>Dogs</option>
-                            <option value="cat" {% if request.GET.species == 'cat' %}selected{% endif %}>Cats</option>
-                            <option value="bird" {% if request.GET.species == 'bird' %}selected{% endif %}>Birds</option>
-                            <option value="fish" {% if request.GET.species == 'fish' %}selected{% endif %}>Fish</option>
-                            <option value="reptile" {% if request.GET.species == 'reptile' %}selected{% endif %}>Reptiles</option>
-                            <option value="other" {% if request.GET.species == 'other' %}selected{% endif %}>Other</option>
+                        <select name="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="lost" {% if request.GET.status == 'lost' %}selected{% endif %}>Lost</option>
+                            <option value="found" {% if request.GET.status == 'found' %}selected{% endif %}>Found</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <select name="age_range" class="form-select">
-                            <option value="">All Ages</option>
-                            <option value="0-1" {% if request.GET.age_range == '0-1' %}selected{% endif %}>0-1 years</option>
-                            <option value="1-3" {% if request.GET.age_range == '1-3' %}selected{% endif %}>1-3 years</option>
-                            <option value="3-5" {% if request.GET.age_range == '3-5' %}selected{% endif %}>3-5 years</option>
-                            <option value="5+" {% if request.GET.age_range == '5+' %}selected{% endif %}>5+ years</option>
-                        </select>
+                        <input type="date" name="date" class="form-control" value="{{ request.GET.date }}" placeholder="Filter by date">
                     </div>
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
@@ -50,40 +117,42 @@
         </form>
     </div>
 
-    {% if pets %}
-    <div class="pet-grid">
-        {% for pet in pets %}
-        <div class="card pet-card">
-            {% if pet.image %}
-            <img src="{{ pet.image.url }}" class="card-img-top pet-image" alt="{{ pet.name }}">
+    {% if items %}
+    <div class="item-grid">
+        {% for item in items %}
+        <div class="item-card">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" class="item-image" alt="{{ item.title }}">
             {% else %}
-            <img src="{% static 'pets/images/default_pet.jpg' %}" class="card-img-top pet-image" alt="Default Pet Image">
+            <img src="{% static 'lost_found/images/default_pet.jpg' %}" class="item-image" alt="Default Pet Image">
             {% endif %}
-            <div class="card-body pet-info">
-                <h5 class="card-title pet-name">{{ pet.name }}</h5>
-                <div class="pet-details">
-                    <p><i class="fas fa-paw"></i> {{ pet.get_type_display }}</p>
-                    <p><i class="fas fa-dna"></i> {{ pet.breed }}</p>
-                    <p><i class="fas fa-birthday-cake"></i> {{ pet.age }} years old</p>
-                    <p><i class="fas fa-heart"></i> {{ pet.get_adoption_status_display }}</p>
+            <div class="item-info">
+                <span class="status-badge status-{{ item.status }}">{{ item.get_status_display }}</span>
+                <h5 class="item-title">{{ item.title }}</h5>
+                <div class="item-details">
+                    <p><i class="fas fa-map-marker-alt"></i> {{ item.location }}</p>
+                    <p><i class="fas fa-calendar"></i> {{ item.date }}</p>
+                    {% if item.pet %}
+                    <p><i class="fas fa-paw"></i> {{ item.pet.get_type_display }}</p>
+                    {% endif %}
                 </div>
-                <a href="{% url 'core:pet_detail' pet.id %}" class="btn btn-primary view-details-btn">View Details</a>
+                <a href="{% url 'lost_found:detail' item.id %}" class="btn btn-primary w-100">View Details</a>
             </div>
         </div>
         {% endfor %}
     </div>
 
     {% if is_paginated %}
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="First">
+                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}" aria-label="First">
                     <span aria-hidden="true">&laquo;&laquo;</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Previous">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
@@ -96,19 +165,19 @@
             </li>
             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}">{{ num }}</a>
+                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}">{{ num }}</a>
             </li>
             {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Next">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Last">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date %}&date={{ request.GET.date }}{% endif %}" aria-label="Last">
                     <span aria-hidden="true">&raquo;&raquo;</span>
                 </a>
             </li>
@@ -118,10 +187,10 @@
     {% endif %}
 
     {% else %}
-    <div class="no-pets-message">
-        <i class="fas fa-paw"></i>
-        <h3>No pets available for adoption</h3>
-        <p>Check back later for new pets or try adjusting your search criteria.</p>
+    <div class="no-items-message">
+        <i class="fas fa-search"></i>
+        <h3>No lost or found pets</h3>
+        <p>Check back later for new listings or try adjusting your search criteria.</p>
     </div>
     {% endif %}
 </div>

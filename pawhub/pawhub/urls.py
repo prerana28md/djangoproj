@@ -6,11 +6,11 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
-    path('users/', include('users.urls')),
     path('pets/', include('pets.urls')),
     path('marketplace/', include('marketplace.urls')),
-    path('hospitals/', include('hospitals.urls', namespace='hospitals')),
-    path('lost-found/', include('lost_found.urls', namespace='lost_found')),
+    path('users/', include('users.urls')),
+    path('lost-found/', include('lost_found.urls')),
+    path('hospitals/', include('hospitals.urls')),
 ]
 
 if settings.DEBUG:

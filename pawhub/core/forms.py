@@ -1,5 +1,6 @@
 from django import forms
 from .models import Pet, Listing, HealthRecord, MarketplaceItem, AdoptionRequest, CartItem, Order
+from lost_found.models import LostFound
 
 class PetForm(forms.ModelForm):
     class Meta:
@@ -148,3 +149,59 @@ class MarketplaceSearchForm(forms.Form):
             'placeholder': 'Search items...'
         })
     )
+
+class LostPetForm(forms.ModelForm):
+    pet_name = forms.CharField(max_length=100, required=True)
+    pet_type = forms.ChoiceField(choices=Pet.PET_TYPES, required=True)
+    breed = forms.CharField(max_length=100, required=True)
+    age = forms.IntegerField(required=True, min_value=0)
+    gender = forms.ChoiceField(choices=Pet.GENDER_CHOICES, required=True)
+    color = forms.CharField(max_length=50, required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True)
+    location = forms.CharField(max_length=200, required=True)
+    date_lost = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    image = forms.ImageField(required=True)
+    contact_info = forms.CharField(widget=forms.Textarea, required=True)
+
+    class Meta:
+        model = LostFound
+        fields = ['pet_name', 'pet_type', 'breed', 'age', 'gender', 'color', 'description', 
+                 'location', 'date_lost', 'image', 'contact_info']
+
+    def save(self, commit=True, user=None):
+        instance = super().save(commit=False)
+        instance.user = user
+        instance.listing_type = 'lost'
+        instance.status = 'active'
+        
+        if commit:
+            instance.save()
+        return instance
+
+class FoundPetForm(forms.ModelForm):
+    pet_name = forms.CharField(max_length=100, required=True)
+    pet_type = forms.ChoiceField(choices=Pet.PET_TYPES, required=True)
+    breed = forms.CharField(max_length=100, required=True)
+    age = forms.IntegerField(required=True, min_value=0)
+    gender = forms.ChoiceField(choices=Pet.GENDER_CHOICES, required=True)
+    color = forms.CharField(max_length=50, required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True)
+    location = forms.CharField(max_length=200, required=True)
+    date_found = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    image = forms.ImageField(required=True)
+    contact_info = forms.CharField(widget=forms.Textarea, required=True)
+
+    class Meta:
+        model = LostFound
+        fields = ['pet_name', 'pet_type', 'breed', 'age', 'gender', 'color', 'description', 
+                 'location', 'date_found', 'image', 'contact_info']
+
+    def save(self, commit=True, user=None):
+        instance = super().save(commit=False)
+        instance.user = user
+        instance.listing_type = 'found'
+        instance.status = 'active'
+        
+        if commit:
+            instance.save()
+        return instance

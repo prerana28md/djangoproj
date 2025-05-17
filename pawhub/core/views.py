@@ -624,45 +624,102 @@ def shop_owner_dashboard(request):
 
 # Lost & Found Views
 @login_required
-def lost_pet_create(request):
+def lost_found_list(request):
+    search_query = request.GET.get('search', '')
+    status = request.GET.get('status', '')
+    date = request.GET.get('date', '')
+    
+    lost_pets = LostFound.objects.filter(status='lost')
+    found_pets = LostFound.objects.filter(status='found')
+    
+    if search_query:
+        lost_pets = lost_pets.filter(
+            Q(title__icontains=search_query) |
+            Q(location__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+        found_pets = found_pets.filter(
+            Q(title__icontains=search_query) |
+            Q(location__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+    
+    if date:
+        lost_pets = lost_pets.filter(date=date)
+        found_pets = found_pets.filter(date=date)
+    
+    if status:
+        if status == 'lost':
+            found_pets = LostFound.objects.none()
+        elif status == 'found':
+            lost_pets = LostFound.objects.none()
+    
+    return render(request, 'core/lost_found_list.html', {
+        'lost_pets': lost_pets,
+        'found_pets': found_pets
+    })
+
+@login_required
+def lost_pet(request):
     if request.method == 'POST':
         form = LostPetForm(request.POST, request.FILES)
         if form.is_valid():
             lost_pet = form.save(commit=False)
             lost_pet.user = request.user
-            lost_pet.status = 'lost'  # Set status to lost
+            lost_pet.status = 'lost'
+            
+            # Create a new Pet entry
+            pet = Pet.objects.create(
+                name=form.cleaned_data['pet_name'],
+                type=form.cleaned_data['pet_type'],
+                breed=form.cleaned_data['breed'],
+                age=form.cleaned_data['age'],
+                gender=form.cleaned_data['gender'],
+                owner=request.user,
+                description=f"Lost pet reported on {timezone.now().strftime('%Y-%m-%d')}"
+            )
+            
+            # Link the pet to the lost report
+            lost_pet.pet = pet
             lost_pet.save()
             
-            messages.success(request, 'Lost pet report created successfully!')
-            return redirect('lost_found:list')
+            messages.success(request, 'Lost pet report has been submitted successfully.')
+            return redirect('core:lost_found_list')
     else:
         form = LostPetForm()
-    return render(request, 'lost_found/lostfound_form.html', {'form': form})
+    
+    return render(request, 'core/lost_pet_form.html', {'form': form})
 
 @login_required
-def found_pet_create(request):
+def found_pet(request):
     if request.method == 'POST':
         form = FoundPetForm(request.POST, request.FILES)
         if form.is_valid():
             found_pet = form.save(commit=False)
             found_pet.user = request.user
-            found_pet.status = 'found'  # Set status to found
+            found_pet.status = 'found'
+            
+            # Create a new Pet entry
+            pet = Pet.objects.create(
+                name=f"Found {form.cleaned_data['pet_type'].title()}",
+                type=form.cleaned_data['pet_type'],
+                breed=form.cleaned_data['breed'],
+                age=form.cleaned_data['age'],
+                gender=form.cleaned_data['gender'],
+                owner=request.user,
+                description=f"Found pet reported on {timezone.now().strftime('%Y-%m-%d')}"
+            )
+            
+            # Link the pet to the found report
+            found_pet.pet = pet
             found_pet.save()
             
-            messages.success(request, 'Found pet report created successfully!')
-            return redirect('lost_found:list')
+            messages.success(request, 'Found pet report has been submitted successfully.')
+            return redirect('core:lost_found_list')
     else:
         form = FoundPetForm()
-    return render(request, 'lost_found/lostfound_form.html', {'form': form})
-
-def lost_pet_list(request):
-    # Get all lost pet listings
-    lost_pets = LostFound.objects.filter(status='lost').order_by('-created_at')
-    return render(request, 'lost_found/lostfound_list.html', {'items': lost_pets})
-
-def found_pet_list(request):
-    found_pets = LostFound.objects.filter(status='found').order_by('-created_at')
-    return render(request, 'lost_found/lostfound_list.html', {'items': found_pets})
+    
+    return render(request, 'core/found_pet_form.html', {'form': form})
 
 @login_required
 def lost_pet_detail(request, pk):

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
+from .models import User, UserProfile
 
 User = get_user_model()
 
@@ -20,17 +21,20 @@ class UserLoginForm(AuthenticationForm):
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
+        model = UserProfile
+        fields = ['phone_number', 'address', 'profile_picture']
+
+class UserUpdateForm(forms.ModelForm):
+    email = forms.EmailField()
+
+    class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'phone_number', 'address', 'profile_picture', 'bio')
-        widgets = {
-            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control form-control-lg'}),
-            'phone_number': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
-            'address': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3}),
-            'bio': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 3}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-control form-control-lg'}),
-        }
+        fields = ['username', 'email', 'first_name', 'last_name']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['phone_number', 'address', 'profile_picture']
         
     def clean_email(self):
         email = self.cleaned_data.get('email')

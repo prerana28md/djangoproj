@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -7,58 +8,55 @@
         <div class="col-md-8">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">{{ title }}</h2>
+                    <h2 class="mb-0">
+                        {% if form.instance.pk %}
+                            Edit Pet Listing
+                        {% else %}
+                            List Pet for Sale
+                        {% endif %}
+                    </h2>
                 </div>
                 <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
+                    <form method="post">
                         {% csrf_token %}
                         
                         <div class="mb-4">
                             <label for="id_pet" class="form-label">Pet</label>
-                            <select name="pet" id="id_pet" class="form-select form-select-lg" required>
-                                <option value="">Select a pet</option>
-                                {% for pet in form.fields.pet.queryset %}
-                                    <option value="{{ pet.id }}" {% if form.instance.pet_id == pet.id %}selected{% endif %}>
-                                        {{ pet.name }} ({{ pet.get_type_display }} - {{ pet.breed }})
-                                    </option>
-                                {% endfor %}
-                            </select>
+                            {{ form.pet }}
                             {% if form.pet.errors %}
                                 <div class="alert alert-danger mt-2">{{ form.pet.errors }}</div>
                             {% endif %}
-                            {% if not form.fields.pet.queryset %}
+                            {% if not form.pet.queryset %}
                                 <div class="alert alert-warning mt-2">
                                     <i class="fas fa-exclamation-triangle"></i> You don't have any pets yet. 
                                     <a href="{% url 'core:pet_create' %}" class="alert-link">Add a pet first</a>.
                                 </div>
                             {% endif %}
                         </div>
-
+                        
                         <div class="mb-4">
-                            <label for="id_price" class="form-label">Price ($)</label>
-                            <input type="number" name="price" id="id_price" class="form-control form-control-lg" min="0" step="0.01" required>
-                            <div class="form-text">Enter the price in dollars</div>
+                            <label for="id_price" class="form-label">Price</label>
+                            {{ form.price }}
                             {% if form.price.errors %}
                                 <div class="alert alert-danger mt-2">{{ form.price.errors }}</div>
                             {% endif %}
                         </div>
-
+                        
                         <div class="mb-4">
                             <label for="id_description" class="form-label">Description</label>
-                            <textarea name="description" id="id_description" class="form-control form-control-lg" rows="4" required></textarea>
-                            <div class="form-text">Provide details about the pet and why you're selling it</div>
+                            {{ form.description }}
                             {% if form.description.errors %}
                                 <div class="alert alert-danger mt-2">{{ form.description.errors }}</div>
                             {% endif %}
                         </div>
                         
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-save"></i> Submit
-                            </button>
-                            <a href="{% url 'marketplace:pet_listing_list' %}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-times"></i> Cancel
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'marketplace:pet_listing_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back to Listings
                             </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Listing
+                            </button>
                         </div>
                     </form>
                 </div>

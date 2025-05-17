@@ -9,11 +9,11 @@ from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.conf import settings
-from .forms import UserRegistrationForm, UserProfileForm
+from .forms import UserRegistrationForm, UserProfileForm, UserUpdateForm, ProfileUpdateForm
 import uuid
 from .models import User, UserProfile
 from .tokens import account_activation_token
-from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView, PasswordChangeView
 from django.urls import reverse_lazy
 
 def login_view(request):
@@ -149,3 +149,34 @@ def dashboard(request):
         'user': request.user,
     }
     return render(request, 'users/dashboard.html', context)
+
+@login_required
+def profile_update(request):
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('users:profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+    
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form
+    }
+    return render(request, 'users/profile_update.html', context)
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'users/password_change.html'
+    success_url = reverse_lazy('users:profile')
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Your password has been changed successfully!')
+        return super().form_valid(form)
+
+password_change = CustomPasswordChangeView.as_view()
