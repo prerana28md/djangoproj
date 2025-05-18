@@ -35,14 +35,6 @@
                         </div>
                         
                         <div class="mb-4">
-                            <label for="id_listing_type" class="form-label">Listing Type</label>
-                            {{ form.listing_type }}
-                            {% if form.listing_type.errors %}
-                                <div class="alert alert-danger mt-2">{{ form.listing_type.errors }}</div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="mb-4">
                             <label for="id_status" class="form-label">Status</label>
                             {{ form.status }}
                             {% if form.status.errors %}
@@ -50,31 +42,15 @@
                             {% endif %}
                         </div>
 
-                        <!-- Lost Pet Fields -->
-                        <div id="lost-pet-fields" class="mb-4" style="display: none;">
-                            <div class="mb-3">
-                                <label for="id_last_seen_location" class="form-label">Last Seen Location</label>
-                                {{ form.last_seen_location }}
-                                {% if form.last_seen_location.errors %}
-                                    <div class="alert alert-danger mt-2">{{ form.last_seen_location.errors }}</div>
-                                {% endif %}
-                            </div>
-                            <div class="mb-3">
-                                <label for="id_lost_date" class="form-label">Lost Date</label>
-                                {{ form.lost_date }}
-                                {% if form.lost_date.errors %}
-                                    <div class="alert alert-danger mt-2">{{ form.lost_date.errors }}</div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 d-flex justify-content-between">
-                            <a href="{% url 'core:listing_list' %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Cancel
-                            </a>
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Save Listing
+                                {% if form.instance.pk %}
+                                    Update Listing
+                                {% else %}
+                                    Create Listing
+                                {% endif %}
                             </button>
+                            <a href="{% url 'core:listing_list' %}" class="btn btn-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>

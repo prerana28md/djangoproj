@@ -87,9 +87,12 @@ def add_to_cart(request, item_id):
 @login_required
 def remove_from_cart(request, item_id):
     cart = get_object_or_404(Cart, user=request.user)
-    cart_item = get_object_or_404(CartItem, cart=cart, marketplace_item_id=item_id)
-    cart_item.delete()
-    messages.success(request, 'Item removed from cart!')
+    try:
+        cart_item = CartItem.objects.get(cart=cart, marketplace_item_id=item_id)
+        cart_item.delete()
+        messages.success(request, 'Item removed from cart!')
+    except CartItem.DoesNotExist:
+        messages.error(request, 'Item not found in cart.')
     return redirect('marketplace:cart')
 
 @login_required
@@ -110,7 +113,7 @@ def update_cart_item(request, item_id):
 
 @login_required
 def pet_listing_list(request):
-    listings = Listing.objects.filter(listing_type='sale', status='available')
+    listings = Listing.objects.filter(pet__type='sale', status='available').select_related('pet')
     return render(request, 'marketplace/pet_listing_list.html', {'listings': listings})
 
 @login_required
@@ -119,8 +122,10 @@ def pet_listing_create(request):
         form = ListingForm(request.POST, request.FILES)
         if form.is_valid():
             listing = form.save(commit=False)
-            listing.listing_type = 'sale'
-            listing.status = 'available'
+            pet = form.cleaned_data['pet']
+            if pet.type != 'sale':
+                messages.error(request, 'Only pets marked for sale can be listed in the marketplace.')
+                return redirect('marketplace:pet_listing_list')
             listing.save()
             messages.success(request, 'Pet listed for sale successfully!')
             return redirect('marketplace:pet_listing_list')
@@ -130,7 +135,7 @@ def pet_listing_create(request):
 
 @login_required
 def pet_listing_detail(request, pk):
-    listing = get_object_or_404(Listing, pk=pk, listing_type='sale')
+    listing = get_object_or_404(Listing, pk=pk, pet__type='sale', status='available')
     return render(request, 'marketplace/pet_listing_detail.html', {'listing': listing})
 
 @login_required

@@ -259,15 +259,21 @@
             <img src="{% static 'core/images/default_pet.jpg' %}" class="card-img-top pet-image" alt="Default Pet Image">
             {% endif %}
             <div class="card-body pet-info">
-                <div class="listing-type-badge {% if listing.listing_type == 'adoption' %}adoption{% elif listing.listing_type == 'sale' %}sale{% else %}exchange{% endif %}">
-                    {{ listing.get_listing_type_display }}
+                <div class="listing-type-badge {% if listing.pet.type == 'adoption' %}adoption{% elif listing.pet.type == 'sale' %}sale{% else %}exchange{% endif %}">
+                    {% if listing.pet.type == 'adoption' %}
+                        <i class="fas fa-heart"></i> For Adoption
+                    {% elif listing.pet.type == 'sale' %}
+                        <i class="fas fa-tag"></i> For Sale
+                    {% else %}
+                        <i class="fas fa-exchange-alt"></i> For Exchange
+                    {% endif %}
                 </div>
                 <h5 class="card-title pet-name">{{ listing.pet.name }}</h5>
                 <div class="pet-details">
                     <p><i class="fas fa-paw"></i> {{ listing.pet.get_type_display }}</p>
                     <p><i class="fas fa-dna"></i> {{ listing.pet.breed }}</p>
                     <p><i class="fas fa-birthday-cake"></i> {{ listing.pet.age }} years old</p>
-                    {% if listing.listing_type == 'sale' and listing.pet.price %}
+                    {% if listing.pet.type == 'sale' and listing.pet.price %}
                     <p><i class="fas fa-tag"></i> Price: ${{ listing.pet.price }}</p>
                     {% endif %}
                 </div>

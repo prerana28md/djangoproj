@@ -3,10 +3,11 @@ from .models import Listing, MarketplaceItem
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ('pet', 'listing_type', 'status', 'date_posted')
-    list_filter = ('listing_type', 'status')
-    search_fields = ('pet__name', 'pet__owner__username')
+    list_display = ('pet', 'status', 'date_posted')
+    list_filter = ('status', 'date_posted')
+    search_fields = ('pet__name', 'pet__species', 'pet__breed')
     date_hierarchy = 'date_posted'
+    ordering = ('-date_posted',)
 
 @admin.register(MarketplaceItem)
 class MarketplaceItemAdmin(admin.ModelAdmin):

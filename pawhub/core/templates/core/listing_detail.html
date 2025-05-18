@@ -8,7 +8,6 @@
             
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Listing Type:</strong> {{ listing.get_listing_type_display }}</p>
                     <p><strong>Status:</strong> {{ listing.get_status_display }}</p>
                     <p><strong>Posted On:</strong> {{ listing.date_posted|date:"F j, Y" }}</p>
                 </div>
@@ -18,8 +17,9 @@
                         <li>Type: {{ listing.pet.get_type_display }}</li>
                         <li>Breed: {{ listing.pet.breed }}</li>
                         <li>Age: {{ listing.pet.age }} years</li>
-                        <li>Health Status: {{ listing.pet.health_status }}</li>
-                        <li>Vaccination Status: {{ listing.pet.vaccination_status }}</li>
+                        {% if listing.pet.type == 'sale' and listing.pet.price %}
+                        <li>Price: ${{ listing.pet.price }}</li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

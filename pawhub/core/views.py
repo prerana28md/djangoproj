@@ -25,18 +25,12 @@ def pet_create(request):
     if request.method == 'POST':
         form = PetForm(request.POST, request.FILES)
         if form.is_valid():
+            # Create the pet
             pet = form.save(commit=False)
             pet.owner = request.user
             pet.save()
             
-            # Create a listing for the pet
-            listing = Listing.objects.create(
-                pet=pet,
-                listing_type='adoption',  # Default to adoption
-                status='available'
-            )
-            
-            messages.success(request, 'Pet added successfully and listed for adoption!')
+            messages.success(request, f'Pet added successfully!')
             return redirect('core:pet_list')
     else:
         form = PetForm()
@@ -136,14 +130,14 @@ def listing_delete(request, pk):
     return render(request, 'core/listing_confirm_delete.html', {'listing': listing})
 
 def public_listings(request):
-    listings = Listing.objects.filter(status='available')
-    listing_type = request.GET.get('type', '')
+    listings = Listing.objects.filter(status='available').select_related('pet')
+    pet_type = request.GET.get('type', '')
     search_query = request.GET.get('search', '')
-    pet_type = request.GET.get('species', '')
+    species = request.GET.get('species', '')
     age_range = request.GET.get('age_range', '')
     
-    if listing_type:
-        listings = listings.filter(listing_type=listing_type)
+    if pet_type:
+        listings = listings.filter(pet__type=pet_type)
     
     if search_query:
         listings = listings.filter(
@@ -152,8 +146,8 @@ def public_listings(request):
             Q(pet__description__icontains=search_query)
         )
     
-    if pet_type:
-        listings = listings.filter(pet__type=pet_type)
+    if species:
+        listings = listings.filter(pet__species=species)
     
     if age_range:
         if age_range == '0-1':
@@ -171,12 +165,17 @@ def public_listings(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    return render(request, 'core/public_listings.html', {
+    context = {
         'listings': page_obj,
         'is_paginated': page_obj.has_other_pages(),
         'page_obj': page_obj,
-        'current_type': listing_type
-    })
+        'current_type': pet_type,
+        'current_species': species,
+        'current_age_range': age_range,
+        'search_query': search_query,
+    }
+    
+    return render(request, 'core/public_listings.html', context)
 
 def home(request):
     return render(request, 'core/home.html')
@@ -195,7 +194,7 @@ def pet_list(request):
         )
     
     if pet_type:
-        pets = pets.filter(type=pet_type)
+        pets = pets.filter(species=pet_type)
     
     if age_range:
         if age_range == '0-1':
@@ -542,7 +541,7 @@ def checkout(request):
                     # Handle marketplace items
                     OrderItem.objects.create(
                         order=order,
-                        item=cart_item.marketplace_item,  # Changed from marketplace_item to item
+                        item=cart_item.marketplace_item,
                         quantity=cart_item.quantity,
                         price_at_time=cart_item.marketplace_item.price
                     )
@@ -563,7 +562,7 @@ def checkout(request):
                     # Create order item with the marketplace item
                     OrderItem.objects.create(
                         order=order,
-                        item=marketplace_item,  # Use the created marketplace item
+                        item=marketplace_item,
                         quantity=1,
                         price_at_time=pet.price
                     )
@@ -605,8 +604,8 @@ def order_cancel(request, pk):
         order.save()
         
         # Restore stock for each item
-        for order_item in order.orderitem_set.all():  # Changed from order.items.all() to order.orderitem_set.all()
-            marketplace_item = order_item.item  # This is now correct as item is the field name in OrderItem model
+        for order_item in order.orderitem_set.all():
+            marketplace_item = order_item.item
             marketplace_item.stock += order_item.quantity
             marketplace_item.save()
         
@@ -680,7 +679,7 @@ def lost_pet(request):
             # Create a new Pet entry
             pet = Pet.objects.create(
                 name=form.cleaned_data['pet_name'],
-                type=form.cleaned_data['pet_type'],
+                species=form.cleaned_data['pet_type'],
                 breed=form.cleaned_data['breed'],
                 age=form.cleaned_data['age'],
                 gender=form.cleaned_data['gender'],
@@ -711,7 +710,7 @@ def found_pet(request):
             # Create a new Pet entry
             pet = Pet.objects.create(
                 name=f"Found {form.cleaned_data['pet_type'].title()}",
-                type=form.cleaned_data['pet_type'],
+                species=form.cleaned_data['pet_type'],
                 breed=form.cleaned_data['breed'],
                 age=form.cleaned_data['age'],
                 gender=form.cleaned_data['gender'],

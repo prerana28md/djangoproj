@@ -1,120 +1,79 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - PawHub{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container py-5">
     <div class="row">
         <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3>Shipping Information</h3>
-                </div>
+            <div class="card shadow-sm">
                 <div class="card-body">
+                    <h2 class="card-title mb-4">Checkout</h2>
                     <form method="post">
                         {% csrf_token %}
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.shipping_address.id_for_label }}" class="form-label">Shipping Address</label>
-                                {{ form.shipping_address }}
-                                {% if form.shipping_address.errors %}
-                                    <div class="text-danger">
-                                        {{ form.shipping_address.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.shipping_city.id_for_label }}" class="form-label">City</label>
-                                {{ form.shipping_city }}
-                                {% if form.shipping_city.errors %}
-                                    <div class="text-danger">
-                                        {{ form.shipping_city.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.shipping_state.id_for_label }}" class="form-label">State</label>
-                                {{ form.shipping_state }}
-                                {% if form.shipping_state.errors %}
-                                    <div class="text-danger">
-                                        {{ form.shipping_state.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.shipping_zip.id_for_label }}" class="form-label">ZIP Code</label>
-                                {{ form.shipping_zip }}
-                                {% if form.shipping_zip.errors %}
-                                    <div class="text-danger">
-                                        {{ form.shipping_zip.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
                         <div class="mb-3">
-                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
-                            {{ form.phone_number }}
-                            {% if form.phone_number.errors %}
-                                <div class="text-danger">
-                                    {{ form.phone_number.errors }}
+                            <label for="{{ form.shipping_address.id_for_label }}" class="form-label">Shipping Address</label>
+                            {{ form.shipping_address }}
+                            {% if form.shipping_address.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.shipping_address.errors }}
                                 </div>
                             {% endif %}
                         </div>
-
+                        <div class="mb-3">
+                            <label for="{{ form.payment_method.id_for_label }}" class="form-label">Payment Method</label>
+                            {{ form.payment_method }}
+                            {% if form.payment_method.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.payment_method.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
                         <div class="mb-3">
                             <label for="{{ form.notes.id_for_label }}" class="form-label">Order Notes (Optional)</label>
                             {{ form.notes }}
                             {% if form.notes.errors %}
-                                <div class="text-danger">
+                                <div class="invalid-feedback d-block">
                                     {{ form.notes.errors }}
                                 </div>
                             {% endif %}
                         </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-lock"></i> Place Order
-                            </button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart me-2"></i>Place Order
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
-
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Order Summary</h3>
-                </div>
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Qty</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in cart.items.all %}
-                                    <tr>
-                                        <td>{{ item.item.name }}</td>
-                                        <td>{{ item.quantity }}</td>
-                                        <td>${{ item.total_price }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="2" class="text-end"><strong>Total:</strong></td>
-                                    <td><strong>${{ cart.total_price }}</strong></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                    <h3 class="card-title mb-4">Order Summary</h3>
+                    {% for cart_item in cart.items.all %}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                {% if cart_item.marketplace_item %}
+                                    <h6 class="mb-0">{{ cart_item.marketplace_item.name }}</h6>
+                                    <small class="text-muted">Quantity: {{ cart_item.quantity }}</small>
+                                {% elif cart_item.listing %}
+                                    <h6 class="mb-0">{{ cart_item.listing.pet.name }}</h6>
+                                    <small class="text-muted">Pet for Sale</small>
+                                {% endif %}
+                            </div>
+                            <div class="text-end">
+                                {% if cart_item.marketplace_item %}
+                                    <span class="fw-bold">${{ cart_item.marketplace_item.price|floatformat:2 }}</span>
+                                {% elif cart_item.listing %}
+                                    <span class="fw-bold">${{ cart_item.listing.pet.price|floatformat:2 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Total</h5>
+                        <h5 class="mb-0">${{ cart.total_price|floatformat:2 }}</h5>
                     </div>
                 </div>
             </div>

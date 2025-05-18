@@ -27,8 +27,10 @@
                         <strong>Type:</strong> {{ listing.pet.get_type_display }}<br>
                         <strong>Breed:</strong> {{ listing.pet.breed }}<br>
                         <strong>Age:</strong> {{ listing.pet.age }} years<br>
-                        <strong>Listing Type:</strong> {{ listing.get_listing_type_display }}<br>
                         <strong>Status:</strong> {{ listing.get_status_display }}
+                        {% if listing.pet.type == 'sale' and listing.pet.price %}
+                        <br><strong>Price:</strong> ${{ listing.pet.price }}
+                        {% endif %}
                     </p>
                 </div>
                 <div class="card-footer">

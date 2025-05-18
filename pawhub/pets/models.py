@@ -17,10 +17,21 @@ class Pet(models.Model):
         ('unknown', 'Unknown'),
     ]
 
-    ADOPTION_STATUS_CHOICES = [
-        ('available', 'Available for Adoption'),
+    TYPE_CHOICES = [
+        ('adoption', 'For Adoption'),
+        ('sale', 'For Sale'),
+        ('exchange', 'For Exchange'),
+        ('lost', 'Lost Pet'),
+        ('found', 'Found Pet'),
+    ]
+
+    STATUS_CHOICES = [
+        ('available', 'Available'),
+        ('pending', 'Pending'),
         ('adopted', 'Adopted'),
-        ('pending', 'Adoption Pending'),
+        ('sold', 'Sold'),
+        ('exchanged', 'Exchanged'),
+        ('returned', 'Returned to Owner'),
     ]
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='pets')
@@ -29,14 +40,20 @@ class Pet(models.Model):
     breed = models.CharField(max_length=100)
     age = models.PositiveIntegerField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    adoption_status = models.CharField(max_length=20, choices=ADOPTION_STATUS_CHOICES, default='available')
+    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='pets/', blank=True, null=True)
+    location = models.CharField(max_length=200, blank=True)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='adoption')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.get_type_display()})"
+
+    def get_type_display(self):
+        return dict(self.TYPE_CHOICES)[self.type]
 
     class Meta:
         ordering = ['-created_at']

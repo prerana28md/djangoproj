@@ -27,6 +27,16 @@
                     </div>
                 {% endif %}
                 <div class="card-body">
+                    <div class="listing-type-badge mb-3">
+                        <span class="badge {% if pet.type == 'adoption' %}bg-success{% elif pet.type == 'sale' %}bg-primary{% else %}bg-warning{% endif %} fs-5">
+                            {{ pet.get_type_display }}
+                        </span>
+                    </div>
+                    {% if pet.type != 'adoption' and pet.price %}
+                    <div class="price-tag mb-3">
+                        <h4 class="text-primary">${{ pet.price }}</h4>
+                    </div>
+                    {% endif %}
                     {% if user == pet.owner %}
                     <div class="d-grid gap-2">
                         <a href="{% url 'pets:pet_update' pet.pk %}" class="btn btn-primary">
@@ -35,6 +45,12 @@
                         <a href="{% url 'pets:pet_delete' pet.pk %}" class="btn btn-danger">
                             <i class="fas fa-trash"></i> Delete Pet
                         </a>
+                    </div>
+                    {% else %}
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
+                            <i class="fas fa-envelope"></i> Contact Owner
+                        </button>
                     </div>
                     {% endif %}
                 </div>
@@ -67,22 +83,14 @@
                                     {{ pet.get_gender_display }}
                                 </li>
                                 <li class="mb-2">
+                                    <strong><i class="fas fa-map-marker-alt me-2"></i>Location:</strong>
+                                    {{ pet.location }}
+                                </li>
+                                <li class="mb-2">
                                     <strong><i class="fas fa-user me-2"></i>Owner:</strong>
                                     {{ pet.owner.username }}
                                 </li>
                             </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>Adoption Status</h5>
-                            <div class="alert {% if pet.adoption_status == 'available' %}alert-success{% elif pet.adoption_status == 'pending' %}alert-warning{% else %}alert-info{% endif %}">
-                                <i class="fas fa-info-circle me-2"></i>
-                                {{ pet.get_adoption_status_display }}
-                            </div>
-                            {% if pet.adoption_status == 'available' and user != pet.owner %}
-                            <a href="{% url 'core:adoption_request_create' pet.pk %}" class="btn btn-primary">
-                                <i class="fas fa-heart me-2"></i>Adopt This Pet
-                            </a>
-                            {% endif %}
                         </div>
                     </div>
 
@@ -139,6 +147,28 @@
                 </div>
             </div>
             {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactModalLabel">Contact Owner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>To contact the owner about this pet, please use the following information:</p>
+                <ul class="list-unstyled">
+                    <li><strong>Owner:</strong> {{ pet.owner.username }}</li>
+                    <li><strong>Email:</strong> {{ pet.owner.email }}</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
         </div>
     </div>
 </div>

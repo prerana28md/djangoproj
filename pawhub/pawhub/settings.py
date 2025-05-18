@@ -94,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pawhub_db',
         'USER': 'root',
-        'PASSWORD': 'Root@123',
+        'PASSWORD': 'divya',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -166,9 +166,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For developm
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'raksham0205@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-app-password'
-DEFAULT_FROM_EMAIL = 'raksham0205@gmail.com'
+EMAIL_HOST_USER = 'priyankadaivagna1615@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-password'  # You'll need to set this to your Gmail app password
+DEFAULT_FROM_EMAIL = 'priyankadaivagna1615@gmail.com'
 
 # Site URL
 SITE_URL = 'http://localhost:8000'

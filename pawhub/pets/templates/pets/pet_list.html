@@ -6,121 +6,199 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'pets/css/pet_list.css' %}">
+<style>
+    .type-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .type-badge i {
+        font-size: 0.9rem;
+    }
+    .type-badge.adoption {
+        background-color: #28a745;
+        color: white;
+    }
+    .type-badge.sale {
+        background-color: #007bff;
+        color: white;
+    }
+    .type-badge.exchange {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .type-badge.lost {
+        background-color: #dc3545;
+        color: white;
+    }
+    .type-badge.found {
+        background-color: #17a2b8;
+        color: white;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container pet-list-container">
-    <div class="search-filter-section">
-        <form method="get" class="row g-3">
-            <div class="col-md-4">
-                <div class="input-group search-box">
-                    <input type="text" name="search" class="form-control" placeholder="Search by name or breed..." value="{{ request.GET.search }}">
-                    <button class="btn btn-outline-primary" type="submit">
-                        <i class="fas fa-search"></i>
-                    </button>
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4 mb-4">All Pets</h1>
+            
+            <!-- Search and Filter Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control" placeholder="Search pets..." value="{{ request.GET.search }}">
+                        </div>
+                        <div class="col-md-2">
+                            <select name="species" class="form-select">
+                                <option value="">All Species</option>
+                                {% for value, label in species %}
+                                <option value="{{ value }}" {% if request.GET.species == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="type" class="form-select">
+                                <option value="">All Types</option>
+                                {% for value, label in types %}
+                                <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="status" class="form-select">
+                                <option value="">All Statuses</option>
+                                {% for value, label in statuses %}
+                                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="age_range" class="form-select">
+                                <option value="">All Ages</option>
+                                <option value="0-1" {% if request.GET.age_range == '0-1' %}selected{% endif %}>0-1 years</option>
+                                <option value="1-3" {% if request.GET.age_range == '1-3' %}selected{% endif %}>1-3 years</option>
+                                <option value="3-5" {% if request.GET.age_range == '3-5' %}selected{% endif %}>3-5 years</option>
+                                <option value="5+" {% if request.GET.age_range == '5+' %}selected{% endif %}>5+ years</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <a href="{% url 'pets:pet_list' %}" class="btn btn-secondary">Clear Filters</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="row filter-section">
-                    <div class="col-md-4">
-                        <select name="species" class="form-select">
-                            <option value="">All Species</option>
-                            <option value="dog" {% if request.GET.species == 'dog' %}selected{% endif %}>Dogs</option>
-                            <option value="cat" {% if request.GET.species == 'cat' %}selected{% endif %}>Cats</option>
-                            <option value="bird" {% if request.GET.species == 'bird' %}selected{% endif %}>Birds</option>
-                            <option value="other" {% if request.GET.species == 'other' %}selected{% endif %}>Other</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <select name="age_range" class="form-select">
-                            <option value="">All Ages</option>
-                            <option value="0-1" {% if request.GET.age_range == '0-1' %}selected{% endif %}>0-1 years</option>
-                            <option value="1-3" {% if request.GET.age_range == '1-3' %}selected{% endif %}>1-3 years</option>
-                            <option value="3-5" {% if request.GET.age_range == '3-5' %}selected{% endif %}>3-5 years</option>
-                            <option value="5+" {% if request.GET.age_range == '5+' %}selected{% endif %}>5+ years</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
 
-    {% if pets %}
-    <div class="pet-grid">
-        {% for pet in pets %}
-        <div class="card pet-card">
-            {% if pet.image %}
-            <img src="{{ pet.image.url }}" class="card-img-top pet-image" alt="{{ pet.name }}">
-            {% else %}
-            <img src="{% static 'pets/images/default_pet.jpg' %}" class="card-img-top pet-image" alt="Default Pet Image">
-            {% endif %}
-            <div class="card-body pet-info">
-                <h5 class="card-title pet-name">{{ pet.name }}</h5>
-                <div class="pet-details">
-                    <p><i class="fas fa-paw"></i> {{ pet.get_species_display }}</p>
-                    <p><i class="fas fa-dna"></i> {{ pet.breed }}</p>
-                    <p><i class="fas fa-birthday-cake"></i> {{ pet.age }} years old</p>
-                    <p><i class="fas fa-map-marker-alt"></i> {{ pet.location }}</p>
+            <!-- Pet Grid -->
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for pet in pets %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if pet.image %}
+                        <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'images/default-pet.jpg' %}" class="card-img-top" alt="Default pet image" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ pet.name }}</h5>
+                                <span class="type-badge {% if pet.type == 'adoption' %}adoption{% elif pet.type == 'sale' %}sale{% elif pet.type == 'exchange' %}exchange{% elif pet.type == 'lost' %}lost{% else %}found{% endif %}">
+                                    {% if pet.type == 'adoption' %}
+                                        <i class="fas fa-heart"></i>
+                                    {% elif pet.type == 'sale' %}
+                                        <i class="fas fa-tag"></i>
+                                    {% elif pet.type == 'exchange' %}
+                                        <i class="fas fa-exchange-alt"></i>
+                                    {% elif pet.type == 'lost' %}
+                                        <i class="fas fa-search"></i>
+                                    {% else %}
+                                        <i class="fas fa-hand-holding-heart"></i>
+                                    {% endif %}
+                                    {{ pet.get_type_display }}
+                                </span>
+                            </div>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    {{ pet.get_species_display }} • {{ pet.breed }} • {{ pet.age }} years old • {{ pet.get_gender_display }}
+                                </small>
+                            </p>
+                            <p class="card-text">{{ pet.description|truncatewords:20 }}</p>
+                            {% if pet.price %}
+                            <p class="card-text"><strong>Price: ${{ pet.price }}</strong></p>
+                            {% endif %}
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt"></i> {{ pet.location }}
+                                </small>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge {% if pet.status == 'available' %}bg-success{% elif pet.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                    {{ pet.get_status_display }}
+                                </span>
+                                <a href="{% url 'pets:pet_detail' pet.pk %}" class="btn btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <a href="{% url 'pets:detail' pet.id %}" class="btn btn-primary view-details-btn">View Details</a>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        No pets found matching your criteria.
+                    </div>
+                </div>
+                {% endfor %}
             </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-
-    {% if is_paginated %}
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="First">
-                    <span aria-hidden="true">&laquo;&laquo;</span>
-                </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            {% endif %}
-
-            {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-            <li class="page-item active">
-                <span class="page-link">{{ num }}</span>
-            </li>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}">{{ num }}</a>
-            </li>
-            {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.species %}&species={{ request.GET.species }}{% endif %}{% if request.GET.age_range %}&age_range={{ request.GET.age_range }}{% endif %}" aria-label="Last">
-                    <span aria-hidden="true">&raquo;&raquo;</span>
-                </a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-    {% endif %}
-
-    {% else %}
-    <div class="no-pets-message">
-        <i class="fas fa-paw"></i>
-        <h3>No pets found</h3>
-        <p>Try adjusting your search criteria or check back later for new pets.</p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %} 

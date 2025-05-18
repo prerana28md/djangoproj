@@ -3,36 +3,44 @@ from .models import Pet, Listing, HealthRecord, MarketplaceItem, AdoptionRequest
 from lost_found.models import LostFound
 
 class PetForm(forms.ModelForm):
+    type = forms.ChoiceField(
+        choices=[
+            ('adoption', 'Adoption'),
+            ('sale', 'Sale'),
+            ('exchange', 'Exchange'),
+            ('lost', 'Lost'),
+            ('found', 'Found'),
+        ],
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg'})
+    )
+
     class Meta:
         model = Pet
-        fields = ['name', 'type', 'breed', 'age', 'gender', 'health_status', 'vaccination_status', 'adoption_status', 'description', 'image']
+        fields = ['name', 'species', 'breed', 'age', 'gender', 'price', 'description', 'image', 'location', 'type', 'status']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter pet name'}),
-            'type': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'species': forms.Select(attrs={'class': 'form-select form-select-lg'}),
             'breed': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter breed'}),
-            'age': forms.NumberInput(attrs={'class': 'form-control form-control-lg', 'min': '0', 'max': '100'}),
+            'age': forms.NumberInput(attrs={'class': 'form-control form-control-lg', 'min': '0'}),
             'gender': forms.Select(attrs={'class': 'form-select form-select-lg'}),
-            'health_status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
-            'vaccination_status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
-            'adoption_status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control form-control-lg', 'min': '0', 'step': '0.01'}),
             'description': forms.Textarea(attrs={'class': 'form-control form-control-lg', 'rows': 4, 'placeholder': 'Enter pet description'}),
             'image': forms.FileInput(attrs={'class': 'form-control form-control-lg'}),
+            'location': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'placeholder': 'Enter location'}),
+            'status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['type'].choices = Pet.PET_TYPES
+        self.fields['species'].choices = Pet.SPECIES_CHOICES
         self.fields['gender'].choices = Pet.GENDER_CHOICES
-        self.fields['health_status'].choices = Pet.HEALTH_STATUS_CHOICES
-        self.fields['vaccination_status'].choices = Pet.VACCINATION_STATUS_CHOICES
-        self.fields['adoption_status'].choices = Pet.ADOPTION_STATUS_CHOICES
+        self.fields['status'].choices = Pet.STATUS_CHOICES
 
 class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
-        fields = ['pet', 'listing_type', 'status']
+        fields = ['pet', 'status']
         widgets = {
-            'listing_type': forms.Select(attrs={'class': 'form-select form-select-lg'}),
             'status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
             'pet': forms.Select(attrs={'class': 'form-select form-select-lg'}),
         }
@@ -172,7 +180,7 @@ class MarketplaceSearchForm(forms.Form):
 
 class LostPetForm(forms.ModelForm):
     pet_name = forms.CharField(max_length=100, required=True)
-    pet_type = forms.ChoiceField(choices=Pet.PET_TYPES, required=True)
+    pet_type = forms.ChoiceField(choices=Pet.SPECIES_CHOICES, required=True)
     breed = forms.CharField(max_length=100, required=True)
     age = forms.IntegerField(required=True, min_value=0)
     gender = forms.ChoiceField(choices=Pet.GENDER_CHOICES, required=True)
@@ -200,7 +208,7 @@ class LostPetForm(forms.ModelForm):
 
 class FoundPetForm(forms.ModelForm):
     pet_name = forms.CharField(max_length=100, required=True)
-    pet_type = forms.ChoiceField(choices=Pet.PET_TYPES, required=True)
+    pet_type = forms.ChoiceField(choices=Pet.SPECIES_CHOICES, required=True)
     breed = forms.CharField(max_length=100, required=True)
     age = forms.IntegerField(required=True, min_value=0)
     gender = forms.ChoiceField(choices=Pet.GENDER_CHOICES, required=True)
