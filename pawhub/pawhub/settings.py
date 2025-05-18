@@ -94,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'pawhub_db',
         'USER': 'root',
-        'PASSWORD': 'divya',
+        'PASSWORD': 'Root@123',
         'HOST': 'localhost',
         'PORT': '3306',
     }

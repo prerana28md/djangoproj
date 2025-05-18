@@ -79,16 +79,21 @@ def profile(request):
         profile = UserProfile.objects.create(user=request.user)
     
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             messages.success(request, 'Your profile has been updated!')
             return redirect('users:profile')
     else:
-        form = UserProfileForm(instance=profile)
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=profile)
     
     context = {
-        'form': form,
+        'user_form': user_form,
+        'profile_form': profile_form,
         'profile': profile
     }
     return render(request, 'users/profile.html', context)

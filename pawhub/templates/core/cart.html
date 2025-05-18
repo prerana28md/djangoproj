@@ -18,33 +18,65 @@
                 </thead>
                 <tbody>
                     {% for item in cart.items.all %}
-                        <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    {% if item.item.image %}
-                                        <img src="{{ item.item.image.url }}" alt="{{ item.item.name }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
-                                    {% endif %}
-                                    <div>
-                                        <h6 class="mb-0">{{ item.item.name }}</h6>
-                                        <small class="text-muted">{{ item.item.get_category_display }}</small>
+                        {% if item.marketplace_item or item.listing %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if item.marketplace_item %}
+                                            {% if item.marketplace_item.image %}
+                                                <img src="{{ item.marketplace_item.image.url }}" alt="{{ item.marketplace_item.name }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.marketplace_item.name }}</h6>
+                                                <small class="text-muted">{{ item.marketplace_item.get_category_display }}</small>
+                                            </div>
+                                        {% elif item.listing %}
+                                            {% if item.listing.pet.image %}
+                                                <img src="{{ item.listing.pet.image.url }}" alt="{{ item.listing.pet.name }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ item.listing.pet.name }}</h6>
+                                                <small class="text-muted">{{ item.listing.get_listing_type_display }}</small>
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                </div>
-                            </td>
-                            <td>${{ item.item.price }}</td>
-                            <td>
-                                <form method="post" action="{% url 'core:add_to_cart' item.item.pk %}" class="d-flex align-items-center">
-                                    {% csrf_token %}
-                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.item.stock }}" class="form-control form-control-sm" style="width: 70px;">
-                                    <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
-                                </form>
-                            </td>
-                            <td>${{ item.total_price }}</td>
-                            <td>
-                                <a href="{% url 'core:remove_from_cart' item.item.pk %}" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
+                                </td>
+                                <td>
+                                    {% if item.marketplace_item %}
+                                        ${{ item.marketplace_item.price }}
+                                    {% elif item.listing %}
+                                        ${{ item.listing.pet.price }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.marketplace_item %}
+                                        <form method="post" action="{% url 'core:add_to_cart' item.marketplace_item.pk %}" class="d-flex align-items-center">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.marketplace_item.stock }}" class="form-control form-control-sm" style="width: 70px;">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
+                                        </form>
+                                    {% elif item.listing %}
+                                        <form method="post" action="{% url 'core:add_to_cart' item.listing.pk %}" class="d-flex align-items-center">
+                                            {% csrf_token %}
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="1" class="form-control form-control-sm" style="width: 70px;" disabled>
+                                            <button type="submit" class="btn btn-sm btn-outline-primary ms-2" disabled>Update</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                                <td>${{ item.total_price }}</td>
+                                <td>
+                                    {% if item.marketplace_item %}
+                                        <a href="{% url 'core:remove_from_cart' item.marketplace_item.pk %}" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% elif item.listing %}
+                                        <a href="{% url 'core:remove_from_cart' item.listing.pk %}" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </tbody>
                 <tfoot>

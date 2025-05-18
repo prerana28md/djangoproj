@@ -111,12 +111,32 @@ class CartItemForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['shipping_address']
+        fields = ['shipping_address', 'shipping_city', 'shipping_state', 'shipping_zip', 'phone_number', 'notes']
         widgets = {
-            'shipping_address': forms.Textarea(attrs={
+            'shipping_address': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your street address'
+            }),
+            'shipping_city': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your city'
+            }),
+            'shipping_state': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your state'
+            }),
+            'shipping_zip': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your ZIP code'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your phone number'
+            }),
+            'notes': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Enter your shipping address'
+                'placeholder': 'Add any special instructions or notes for your order (optional)'
             })
         }
 

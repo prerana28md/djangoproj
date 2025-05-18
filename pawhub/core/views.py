@@ -542,7 +542,7 @@ def checkout(request):
                     # Handle marketplace items
                     OrderItem.objects.create(
                         order=order,
-                        marketplace_item=cart_item.marketplace_item,
+                        item=cart_item.marketplace_item,  # Changed from marketplace_item to item
                         quantity=cart_item.quantity,
                         price_at_time=cart_item.marketplace_item.price
                     )
@@ -550,15 +550,24 @@ def checkout(request):
                     cart_item.marketplace_item.stock -= cart_item.quantity
                     cart_item.marketplace_item.save()
                 elif cart_item.listing:
-                    # Handle pet listings
+                    # For pet listings, we need to create a marketplace item first
+                    pet = cart_item.listing.pet
+                    marketplace_item = MarketplaceItem.objects.create(
+                        name=f"Pet: {pet.name}",
+                        description=f"Pet purchase: {pet.name} ({pet.get_type_display()})",
+                        price=pet.price,
+                        stock=1,
+                        category='other',
+                        shop_owner=pet.owner
+                    )
+                    # Create order item with the marketplace item
                     OrderItem.objects.create(
                         order=order,
-                        listing=cart_item.listing,
+                        item=marketplace_item,  # Use the created marketplace item
                         quantity=1,
-                        price_at_time=cart_item.listing.pet.price
+                        price_at_time=pet.price
                     )
                     # Transfer pet ownership
-                    pet = cart_item.listing.pet
                     pet.owner = request.user
                     pet.save()
                     # Update listing status
@@ -596,10 +605,10 @@ def order_cancel(request, pk):
         order.save()
         
         # Restore stock for each item
-        for order_item in order.items.all():
-            item = order_item.item
-            item.stock += order_item.quantity
-            item.save()
+        for order_item in order.orderitem_set.all():  # Changed from order.items.all() to order.orderitem_set.all()
+            marketplace_item = order_item.item  # This is now correct as item is the field name in OrderItem model
+            marketplace_item.stock += order_item.quantity
+            marketplace_item.save()
         
         messages.success(request, 'Order cancelled successfully.')
     else:

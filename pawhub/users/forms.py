@@ -34,7 +34,7 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['phone_number', 'address', 'profile_picture']
+        fields = ['phone_number', 'address', 'profile_picture', 'bio']
         
     def clean_email(self):
         email = self.cleaned_data.get('email')
