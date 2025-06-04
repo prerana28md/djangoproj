@@ -7,14 +7,15 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from django.utils import timezone
 from .models import Pet, Listing, HealthRecord, MarketplaceItem, AdoptionRequest, Cart, CartItem, Order, OrderItem
-from lost_found.models import LostFound
 from .forms import PetForm, ListingForm, HealthRecordForm, MarketplaceItemForm, AdoptionRequestForm, AdoptionRequestResponseForm, CartItemForm, OrderForm, MarketplaceSearchForm
-from lost_found.forms import LostPetForm, FoundPetForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
 from users.forms import UserRegistrationForm
 from django.http import JsonResponse
+from django.db.models.deletion import ProtectedError
+from django.db.models.fields import DateTimeField
+from django.db.models.fields.related import ForeignKey, ManyToManyField, OneToOneField
 
 # ----------------------
 # 🐶 Pet Views
@@ -297,8 +298,14 @@ def marketplace_item_delete(request, pk):
         return redirect('core:marketplace_list')
     return render(request, 'core/marketplace_item_confirm_delete.html', {'item': item})
 
+@login_required
 def lost_found(request):
-    return render(request, 'core/lost_found.html')
+    lost_pets = Pet.objects.filter(type='lost').order_by('-created_at')
+    found_pets = Pet.objects.filter(type='found').order_by('-created_at')
+    return render(request, 'core/lost_found.html', {
+        'lost_pets': lost_pets,
+        'found_pets': found_pets
+    })
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -486,7 +493,7 @@ def add_to_cart(request, item_pk):
     
     if quantity > item.stock:
         messages.error(request, 'Requested quantity exceeds available stock.')
-        return redirect('marketplace:detail', pk=item_pk)
+        return redirect('core:marketplace_item_detail', pk=item_pk)
     
     # Remove any existing cart items for this marketplace item
     CartItem.objects.filter(cart=cart, marketplace_item=item).delete()
@@ -499,7 +506,7 @@ def add_to_cart(request, item_pk):
     )
     
     messages.success(request, f'{quantity} x {item.name} added to cart!')
-    return redirect('marketplace:cart')
+    return redirect('core:cart_view')
 
 @login_required
 def remove_from_cart(request, item_pk):
@@ -522,69 +529,75 @@ def remove_from_cart(request, item_pk):
 # Order Views
 @login_required
 def checkout(request):
-    cart = get_object_or_404(Cart, user=request.user)
-    if not cart.items.exists():
-        messages.error(request, 'Your cart is empty!')
-        return redirect('core:marketplace_list')
-    
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.user = request.user
-            order.total_price = cart.total_price
-            order.save()
-            
-            # Create order items and handle pet transfers
-            for cart_item in cart.items.all():
-                if cart_item.marketplace_item:
-                    # Handle marketplace items
-                    OrderItem.objects.create(
-                        order=order,
-                        item=cart_item.marketplace_item,
-                        quantity=cart_item.quantity,
-                        price_at_time=cart_item.marketplace_item.price
-                    )
-                    # Update stock
-                    cart_item.marketplace_item.stock -= cart_item.quantity
-                    cart_item.marketplace_item.save()
-                elif cart_item.listing:
-                    # For pet listings, we need to create a marketplace item first
-                    pet = cart_item.listing.pet
-                    marketplace_item = MarketplaceItem.objects.create(
-                        name=f"Pet: {pet.name}",
-                        description=f"Pet purchase: {pet.name} ({pet.get_type_display()})",
-                        price=pet.price,
-                        stock=1,
-                        category='other',
-                        shop_owner=pet.owner
-                    )
-                    # Create order item with the marketplace item
-                    OrderItem.objects.create(
-                        order=order,
-                        item=marketplace_item,
-                        quantity=1,
-                        price_at_time=pet.price
-                    )
-                    # Transfer pet ownership
-                    pet.owner = request.user
-                    pet.save()
-                    # Update listing status
-                    cart_item.listing.status = 'sold'
-                    cart_item.listing.save()
-            
-            # Clear cart
-            cart.items.all().delete()
-            
-            messages.success(request, 'Order placed successfully!')
-            return redirect('core:order_detail', pk=order.pk)
-    else:
-        form = OrderForm()
-    
-    return render(request, 'core/checkout.html', {
-        'form': form,
-        'cart': cart
-    })
+    try:
+        cart = get_object_or_404(Cart, user=request.user)
+        if not cart.items.exists():
+            messages.error(request, 'Your cart is empty!')
+            return redirect('core:marketplace_list')
+        
+        if request.method == 'POST':
+            form = OrderForm(request.POST)
+            if form.is_valid():
+                order = form.save(commit=False)
+                order.user = request.user
+                order.total_price = cart.total_price
+                order.save()
+                
+                # Create order items and handle pet transfers
+                for cart_item in cart.items.all():
+                    if cart_item.marketplace_item:
+                        # Handle marketplace items
+                        OrderItem.objects.create(
+                            order=order,
+                            item=cart_item.marketplace_item,
+                            quantity=cart_item.quantity,
+                            price_at_time=cart_item.marketplace_item.price
+                        )
+                        # Update stock
+                        cart_item.marketplace_item.stock -= cart_item.quantity
+                        cart_item.marketplace_item.save()
+                    elif cart_item.listing:
+                        # For pet listings, we need to create a marketplace item first
+                        pet = cart_item.listing.pet
+                        marketplace_item = MarketplaceItem.objects.create(
+                            name=f"Pet: {pet.name}",
+                            description=f"Pet purchase: {pet.name} ({pet.get_type_display()})",
+                            price=pet.price,
+                            stock=1,
+                            category='other',
+                            shop_owner=pet.owner
+                        )
+                        # Create order item with the marketplace item
+                        OrderItem.objects.create(
+                            order=order,
+                            item=marketplace_item,
+                            quantity=1,
+                            price_at_time=pet.price
+                        )
+                        # Transfer pet ownership
+                        pet.owner = request.user
+                        pet.save()
+                        # Update listing status
+                        cart_item.listing.status = 'sold'
+                        cart_item.listing.save()
+                
+                # Clear cart
+                cart.items.all().delete()
+                
+                messages.success(request, 'Order placed successfully!')
+                return redirect('core:order_detail', pk=order.pk)
+            else:
+                messages.error(request, 'Please correct the errors in the form.')
+        else:
+            form = OrderForm()
+        
+        return render(request, 'core/checkout.html', {
+            'form': form,
+            'cart': cart
+        })
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
+        return redirect('core:cart_view')
 
 @login_required
 def order_list(request):
@@ -630,155 +643,18 @@ def shop_owner_dashboard(request):
         'orders': orders
     })
 
-# Lost & Found Views
 @login_required
-def lost_found_list(request):
-    search_query = request.GET.get('search', '')
-    status = request.GET.get('status', '')
-    date = request.GET.get('date', '')
-    
-    lost_pets = LostFound.objects.filter(status='lost')
-    found_pets = LostFound.objects.filter(status='found')
-    
-    if search_query:
-        lost_pets = lost_pets.filter(
-            Q(title__icontains=search_query) |
-            Q(location__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
-        found_pets = found_pets.filter(
-            Q(title__icontains=search_query) |
-            Q(location__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
-    
-    if date:
-        lost_pets = lost_pets.filter(date=date)
-        found_pets = found_pets.filter(date=date)
-    
-    if status:
-        if status == 'lost':
-            found_pets = LostFound.objects.none()
-        elif status == 'found':
-            lost_pets = LostFound.objects.none()
-    
-    return render(request, 'core/lost_found_list.html', {
-        'lost_pets': lost_pets,
-        'found_pets': found_pets
-    })
+def mark_pet_found(request, pk):
+    pet = get_object_or_404(Pet, pk=pk, owner=request.user)
+    pet.type = 'found'
+    pet.save()
+    messages.success(request, f'{pet.name} has been marked as found!')
+    return redirect('core:lost_found')
 
 @login_required
-def lost_pet(request):
-    if request.method == 'POST':
-        form = LostPetForm(request.POST, request.FILES)
-        if form.is_valid():
-            lost_pet = form.save(commit=False)
-            lost_pet.user = request.user
-            lost_pet.status = 'lost'
-            
-            # Create a new Pet entry
-            pet = Pet.objects.create(
-                name=form.cleaned_data['pet_name'],
-                species=form.cleaned_data['pet_type'],
-                breed=form.cleaned_data['breed'],
-                age=form.cleaned_data['age'],
-                gender=form.cleaned_data['gender'],
-                owner=request.user,
-                description=f"Lost pet reported on {timezone.now().strftime('%Y-%m-%d')}"
-            )
-            
-            # Link the pet to the lost report
-            lost_pet.pet = pet
-            lost_pet.save()
-            
-            messages.success(request, 'Lost pet report has been submitted successfully.')
-            return redirect('core:lost_found_list')
-    else:
-        form = LostPetForm()
-    
-    return render(request, 'core/lost_pet_form.html', {'form': form})
-
-@login_required
-def found_pet(request):
-    if request.method == 'POST':
-        form = FoundPetForm(request.POST, request.FILES)
-        if form.is_valid():
-            found_pet = form.save(commit=False)
-            found_pet.user = request.user
-            found_pet.status = 'found'
-            
-            # Create a new Pet entry
-            pet = Pet.objects.create(
-                name=f"Found {form.cleaned_data['pet_type'].title()}",
-                species=form.cleaned_data['pet_type'],
-                breed=form.cleaned_data['breed'],
-                age=form.cleaned_data['age'],
-                gender=form.cleaned_data['gender'],
-                owner=request.user,
-                description=f"Found pet reported on {timezone.now().strftime('%Y-%m-%d')}"
-            )
-            
-            # Link the pet to the found report
-            found_pet.pet = pet
-            found_pet.save()
-            
-            messages.success(request, 'Found pet report has been submitted successfully.')
-            return redirect('core:lost_found_list')
-    else:
-        form = FoundPetForm()
-    
-    return render(request, 'core/found_pet_form.html', {'form': form})
-
-@login_required
-def lost_pet_detail(request, pk):
-    lost_pet = get_object_or_404(LostFound, pk=pk, status='lost')
-    return render(request, 'lost_found/lostfound_detail.html', {'item': lost_pet})
-
-@login_required
-def found_pet_detail(request, pk):
-    found_pet = get_object_or_404(LostFound, pk=pk, status='found')
-    return render(request, 'lost_found/lostfound_detail.html', {'item': found_pet})
-
-@login_required
-def lost_pet_update(request, pk):
-    lost_pet = get_object_or_404(LostFound, pk=pk, status='lost', user=request.user)
-    if request.method == 'POST':
-        form = LostPetForm(request.POST, request.FILES, instance=lost_pet)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Lost pet report updated successfully!')
-            return redirect('lost_found:detail', pk=lost_pet.pk)
-    else:
-        form = LostPetForm(instance=lost_pet)
-    return render(request, 'lost_found/lostfound_form.html', {'form': form})
-
-@login_required
-def found_pet_update(request, pk):
-    found_pet = get_object_or_404(LostFound, pk=pk, status='found', user=request.user)
-    if request.method == 'POST':
-        form = FoundPetForm(request.POST, request.FILES, instance=found_pet)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Found pet report updated successfully!')
-            return redirect('lost_found:detail', pk=found_pet.pk)
-    else:
-        form = FoundPetForm(instance=found_pet)
-    return render(request, 'lost_found/lostfound_form.html', {'form': form})
-
-@login_required
-def lost_pet_delete(request, pk):
-    lost_pet = get_object_or_404(LostFound, pk=pk, status='lost', user=request.user)
-    if request.method == 'POST':
-        lost_pet.delete()
-        messages.success(request, 'Lost pet report deleted successfully!')
-        return redirect('lost_found:list')
-    return render(request, 'lost_found/lostfound_confirm_delete.html', {'item': lost_pet})
-
-@login_required
-def found_pet_delete(request, pk):
-    found_pet = get_object_or_404(LostFound, pk=pk, status='found', user=request.user)
-    if request.method == 'POST':
-        found_pet.delete()
-        messages.success(request, 'Found pet report deleted successfully!')
-        return redirect('lost_found:list')
-    return render(request, 'lost_found/lostfound_confirm_delete.html', {'item': found_pet})
+def mark_pet_lost(request, pk):
+    pet = get_object_or_404(Pet, pk=pk, owner=request.user)
+    pet.type = 'lost'
+    pet.save()
+    messages.success(request, f'{pet.name} has been marked as lost!')
+    return redirect('core:lost_found')

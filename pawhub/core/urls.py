@@ -15,6 +15,8 @@ urlpatterns = [
     path('pets/<int:pk>/', views.pet_detail, name='pet_detail'),
     path('pets/<int:pk>/update/', views.pet_update, name='pet_update'),
     path('pets/<int:pk>/delete/', views.pet_delete, name='pet_delete'),
+    path('pets/<int:pk>/mark-found/', views.mark_pet_found, name='mark_pet_found'),
+    path('pets/<int:pk>/mark-lost/', views.mark_pet_lost, name='mark_pet_lost'),
     
     # Adoption and Exchange
     path('pets/<int:pet_pk>/adopt/', views.adoption_request_create, name='adoption_request_create'),
@@ -48,13 +50,9 @@ urlpatterns = [
     path('orders/<int:pk>/cancel/', views.order_cancel, name='order_cancel'),
     
     # Lost and Found
-    path('lost-found/', views.lost_found_list, name='lost_found_list'),
-    path('lost-pet/', views.lost_pet, name='lost_pet'),
-    path('found-pet/', views.found_pet, name='found_pet'),
-    path('lost-pet/<int:pk>/', views.lost_pet_detail, name='lost_pet_detail'),
-    path('lost-pet/<int:pk>/update/', views.lost_pet_update, name='lost_pet_update'),
-    path('lost-pet/<int:pk>/delete/', views.lost_pet_delete, name='lost_pet_delete'),
-    path('found-pet/<int:pk>/', views.found_pet_detail, name='found_pet_detail'),
-    path('found-pet/<int:pk>/update/', views.found_pet_update, name='found_pet_update'),
-    path('found-pet/<int:pk>/delete/', views.found_pet_delete, name='found_pet_delete'),
+    path('lost-found/', views.lost_found, name='lost_found'),
+    
+    # Login and Signup
+    path('login/', views.login_view, name='login'),
+    path('signup/', views.SignUpView.as_view(), name='signup'),
 ]

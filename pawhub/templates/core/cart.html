@@ -43,9 +43,9 @@
                                 </td>
                                 <td>
                                     {% if item.marketplace_item %}
-                                        ${{ item.marketplace_item.price }}
+                                        ₹{{ item.marketplace_item.price }}
                                     {% elif item.listing %}
-                                        ${{ item.listing.pet.price }}
+                                        ₹{{ item.listing.pet.price }}
                                     {% endif %}
                                 </td>
                                 <td>
@@ -63,7 +63,7 @@
                                         </form>
                                     {% endif %}
                                 </td>
-                                <td>${{ item.total_price }}</td>
+                                <td>₹{{ item.total_price }}</td>
                                 <td>
                                     {% if item.marketplace_item %}
                                         <a href="{% url 'core:remove_from_cart' item.marketplace_item.pk %}" class="btn btn-sm btn-danger">
@@ -82,7 +82,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                        <td><strong>${{ cart.total_price }}</strong></td>
+                        <td><strong>₹{{ cart.total_price }}</strong></td>
                         <td></td>
                     </tr>
                 </tfoot>

@@ -7,10 +7,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('pets/', include('pets.urls')),
-    path('marketplace/', include('marketplace.urls')),
     path('users/', include('users.urls')),
-    path('lost-found/', include('lost_found.urls')),
     path('hospitals/', include('hospitals.urls')),
+    path('marketplace/', include('marketplace.urls')),
 ]
 
 if settings.DEBUG:

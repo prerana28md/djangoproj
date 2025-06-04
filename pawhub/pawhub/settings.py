@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'pets',
     'marketplace',
     'hospitals',
-    'lost_found',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -69,7 +68,6 @@ TEMPLATES = [
             BASE_DIR / 'core' / 'templates',
             BASE_DIR / 'marketplace' / 'templates',
             BASE_DIR / 'hospitals' / 'templates',
-            BASE_DIR / 'lost_found' / 'templates',
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -145,7 +143,6 @@ STATICFILES_DIRS = [
     BASE_DIR / 'core' / 'static',
     BASE_DIR / 'marketplace' / 'static',
     BASE_DIR / 'hospitals' / 'static',
-    BASE_DIR / 'lost_found' / 'static',
 ]
 
 # Media files

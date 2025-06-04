@@ -45,9 +45,9 @@
                                     </td>
                                     <td>
                                         {% if item.marketplace_item %}
-                                            ${{ item.marketplace_item.price }}
+                                            {{ item.marketplace_item.price }}
                                         {% elif item.listing %}
-                                            ${{ item.listing.pet.price }}
+                                            {{ item.listing.pet.price }}
                                         {% endif %}
                                     </td>
                                     <td>
@@ -63,7 +63,7 @@
                                             <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
                                         </form>
                                     </td>
-                                    <td>${{ item.total_price }}</td>
+                                    <td>₹{{ item.total_price }}</td>
                                     <td>
                                         <a href="{% url 'marketplace:remove_from_cart' item.marketplace_item.pk|default:item.listing.pk %}" class="btn btn-sm btn-danger">
                                             <i class="fas fa-trash"></i>
@@ -75,7 +75,7 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                                <td><strong>${{ cart.total_price }}</strong></td>
+                                <td><strong>₹{{ cart.total_price }}</strong></td>
                                 <td></td>
                             </tr>
                         </tfoot>
@@ -86,7 +86,7 @@
                     <a href="{% url 'marketplace:list' %}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Continue Shopping
                     </a>
-                    <a href="{% url 'core:checkout' %}" class="btn btn-primary ms-2">
+                    <a href="{% url 'core:checkout' %}" class="btn btn-primary ms-2" onclick="console.log('Checkout button clicked');">
                         <i class="fas fa-shopping-cart me-2"></i>Proceed to Checkout
                     </a>
                 </div>

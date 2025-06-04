@@ -34,7 +34,7 @@
                     </div>
                     {% if pet.type != 'adoption' and pet.price %}
                     <div class="price-tag mb-3">
-                        <h4 class="text-primary">${{ pet.price }}</h4>
+                        <h4 class="text-primary">₹{{ pet.price }}</h4>
                     </div>
                     {% endif %}
                     {% if user == pet.owner %}

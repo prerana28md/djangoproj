@@ -244,3 +244,24 @@ class HealthRecordCreateView(LoginRequiredMixin, CreateView):
         pet = get_object_or_404(Pet, pk=self.kwargs['pet_pk'])
         form.instance.pet = pet
         return super().form_valid(form)
+
+@login_required
+def mark_pet_lost(request, pk):
+    pet = get_object_or_404(Pet, pk=pk, owner=request.user)
+    pet.type = 'lost'
+    pet.save()
+    messages.success(request, f"{pet.name} has been marked as lost.")
+    return redirect('pets:my_lost_pets')
+
+@login_required
+def mark_pet_found(request, pk):
+    pet = get_object_or_404(Pet, pk=pk, owner=request.user)
+    pet.type = 'found'
+    pet.save()
+    messages.success(request, f"{pet.name} has been marked as found.")
+    return redirect('pets:my_lost_pets')
+
+@login_required
+def my_lost_pets(request):
+    lost_pets = Pet.objects.filter(owner=request.user, type='lost').order_by('-created_at')
+    return render(request, 'pets/my_lost_pets.html', {'lost_pets': lost_pets})

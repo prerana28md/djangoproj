@@ -1,83 +1,114 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %}
+
+{% block title %}Lost & Found Pets{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Lost & Found</h1>
-    
-    <!-- Lost Pet Section -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-danger text-white">
-                    <h3 class="mb-0">Lost Your Pet?</h3>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Guidelines for Lost Pets:</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check-circle text-danger"></i> Provide accurate details about your pet</li>
-                        <li><i class="fas fa-check-circle text-danger"></i> Include last seen location and time</li>
-                        <li><i class="fas fa-check-circle text-danger"></i> Add clear photos if available</li>
-                        <li><i class="fas fa-check-circle text-danger"></i> Keep contact information updated</li>
-                    </ul>
-                    <p class="text-muted">Don't worry! We'll help you find your beloved pet.</p>
-                    <a href="{% url 'core:lost_pet_create' %}" class="btn btn-danger w-100 mt-3">
-                        <i class="fas fa-search me-2"></i>Report Lost Pet
-                    </a>
-                </div>
-            </div>
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Lost & Found Pets</h2>
         </div>
-
-        <!-- Found Pet Section -->
-        <div class="col-md-6">
-            <div class="card h-100">
-                <div class="card-header bg-success text-white">
-                    <h3 class="mb-0">Found a Pet?</h3>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Guidelines for Found Pets:</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check-circle text-success"></i> Provide location where pet was found</li>
-                        <li><i class="fas fa-check-circle text-success"></i> Describe the pet's condition</li>
-                        <li><i class="fas fa-check-circle text-success"></i> Add photos if possible</li>
-                        <li><i class="fas fa-check-circle text-success"></i> Keep the pet safe until claimed</li>
-                    </ul>
-                    <p class="text-muted">Help reunite lost pets with their families!</p>
-                    <a href="{% url 'core:found_pet_create' %}" class="btn btn-success w-100 mt-3">
-                        <i class="fas fa-paw me-2"></i>Report Found Pet
-                    </a>
-                </div>
-            </div>
+        <div class="col text-end">
+            <a href="{% url 'pets:pet_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Report Lost Pet
+            </a>
         </div>
     </div>
-</div>
 
-<style>
-.card {
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-}
-.card:hover {
-    transform: translateY(-5px);
-}
-.card-header {
-    border-radius: 5px 5px 0 0;
-}
-.btn {
-    border-radius: 5px;
-    padding: 12px;
-    font-weight: bold;
-    transition: all 0.3s;
-}
-.btn:hover {
-    transform: scale(1.02);
-}
-.list-unstyled li {
-    margin-bottom: 10px;
-    padding-left: 5px;
-}
-.fas {
-    margin-right: 8px;
-}
-</style>
+    <!-- Lost Pets Section -->
+    <div class="mb-5">
+        <h3 class="mb-4">Lost Pets</h3>
+        {% if lost_pets %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for pet in lost_pets %}
+                    <div class="col">
+                        <div class="card h-100">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-paw fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ pet.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Species:</strong> {{ pet.get_species_display }}<br>
+                                    <strong>Breed:</strong> {{ pet.breed }}<br>
+                                    <strong>Age:</strong> {{ pet.age }} years<br>
+                                    <strong>Location:</strong> {{ pet.location }}
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'pets:pet_detail' pet.pk %}" class="btn btn-info">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                                    {% if pet.owner == request.user %}
+                                        <a href="{% url 'pets:mark_pet_found' pet.pk %}" class="btn btn-success">
+                                            <i class="fas fa-check"></i> Mark Found
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+                                Lost on: {{ pet.created_at|date:"F j, Y" }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No lost pets have been reported.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Found Pets Section -->
+    <div class="mb-5">
+        <h3 class="mb-4">Found Pets</h3>
+        {% if found_pets %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for pet in found_pets %}
+                    <div class="col">
+                        <div class="card h-100">
+                            {% if pet.image %}
+                                <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-paw fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ pet.name }}</h5>
+                                <p class="card-text">
+                                    <strong>Species:</strong> {{ pet.get_species_display }}<br>
+                                    <strong>Breed:</strong> {{ pet.breed }}<br>
+                                    <strong>Age:</strong> {{ pet.age }} years<br>
+                                    <strong>Location:</strong> {{ pet.location }}
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'pets:pet_detail' pet.pk %}" class="btn btn-info">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                                    {% if pet.owner == request.user %}
+                                        <a href="{% url 'pets:mark_pet_lost' pet.pk %}" class="btn btn-warning">
+                                            <i class="fas fa-exclamation-triangle"></i> Mark Lost
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer text-muted">
+                                Found on: {{ pet.created_at|date:"F j, Y" }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No found pets have been reported.
+            </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %} 

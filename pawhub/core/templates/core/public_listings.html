@@ -274,7 +274,7 @@
                     <p><i class="fas fa-dna"></i> {{ listing.pet.breed }}</p>
                     <p><i class="fas fa-birthday-cake"></i> {{ listing.pet.age }} years old</p>
                     {% if listing.pet.type == 'sale' and listing.pet.price %}
-                    <p><i class="fas fa-tag"></i> Price: ${{ listing.pet.price }}</p>
+                    <p><i class="fas fa-tag"></i> Price: ₹{{ listing.pet.price }}</p>
                     {% endif %}
                 </div>
                 <a href="{% url 'core:pet_detail' listing.pet.id %}" class="btn view-details-btn">View Details</a>

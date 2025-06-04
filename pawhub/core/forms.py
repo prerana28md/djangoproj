@@ -1,6 +1,5 @@
 from django import forms
 from .models import Pet, Listing, HealthRecord, MarketplaceItem, AdoptionRequest, CartItem, Order
-from lost_found.models import LostFound
 
 class PetForm(forms.ModelForm):
     type = forms.ChoiceField(
@@ -119,27 +118,15 @@ class CartItemForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['shipping_address', 'shipping_city', 'shipping_state', 'shipping_zip', 'phone_number', 'notes']
+        fields = ['shipping_address', 'payment_method', 'notes']
         widgets = {
-            'shipping_address': forms.TextInput(attrs={
+            'shipping_address': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': 'Enter your street address'
+                'rows': 3,
+                'placeholder': 'Enter your complete shipping address'
             }),
-            'shipping_city': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your city'
-            }),
-            'shipping_state': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your state'
-            }),
-            'shipping_zip': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your ZIP code'
-            }),
-            'phone_number': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter your phone number'
+            'payment_method': forms.Select(attrs={
+                'class': 'form-select'
             }),
             'notes': forms.Textarea(attrs={
                 'class': 'form-control',
@@ -147,6 +134,15 @@ class OrderForm(forms.ModelForm):
                 'placeholder': 'Add any special instructions or notes for your order (optional)'
             })
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['payment_method'].choices = [
+            ('credit_card', 'Credit Card'),
+            ('debit_card', 'Debit Card'),
+            ('paypal', 'PayPal'),
+            ('bank_transfer', 'Bank Transfer')
+        ]
 
 class MarketplaceSearchForm(forms.Form):
     category = forms.ChoiceField(
@@ -177,59 +173,3 @@ class MarketplaceSearchForm(forms.Form):
             'placeholder': 'Search items...'
         })
     )
-
-class LostPetForm(forms.ModelForm):
-    pet_name = forms.CharField(max_length=100, required=True)
-    pet_type = forms.ChoiceField(choices=Pet.SPECIES_CHOICES, required=True)
-    breed = forms.CharField(max_length=100, required=True)
-    age = forms.IntegerField(required=True, min_value=0)
-    gender = forms.ChoiceField(choices=Pet.GENDER_CHOICES, required=True)
-    color = forms.CharField(max_length=50, required=True)
-    description = forms.CharField(widget=forms.Textarea, required=True)
-    location = forms.CharField(max_length=200, required=True)
-    date_lost = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
-    image = forms.ImageField(required=True)
-    contact_info = forms.CharField(widget=forms.Textarea, required=True)
-
-    class Meta:
-        model = LostFound
-        fields = ['pet_name', 'pet_type', 'breed', 'age', 'gender', 'color', 'description', 
-                 'location', 'date_lost', 'image', 'contact_info']
-
-    def save(self, commit=True, user=None):
-        instance = super().save(commit=False)
-        instance.user = user
-        instance.listing_type = 'lost'
-        instance.status = 'active'
-        
-        if commit:
-            instance.save()
-        return instance
-
-class FoundPetForm(forms.ModelForm):
-    pet_name = forms.CharField(max_length=100, required=True)
-    pet_type = forms.ChoiceField(choices=Pet.SPECIES_CHOICES, required=True)
-    breed = forms.CharField(max_length=100, required=True)
-    age = forms.IntegerField(required=True, min_value=0)
-    gender = forms.ChoiceField(choices=Pet.GENDER_CHOICES, required=True)
-    color = forms.CharField(max_length=50, required=True)
-    description = forms.CharField(widget=forms.Textarea, required=True)
-    location = forms.CharField(max_length=200, required=True)
-    date_found = forms.DateField(required=True, widget=forms.DateInput(attrs={'type': 'date'}))
-    image = forms.ImageField(required=True)
-    contact_info = forms.CharField(widget=forms.Textarea, required=True)
-
-    class Meta:
-        model = LostFound
-        fields = ['pet_name', 'pet_type', 'breed', 'age', 'gender', 'color', 'description', 
-                 'location', 'date_found', 'image', 'contact_info']
-
-    def save(self, commit=True, user=None):
-        instance = super().save(commit=False)
-        instance.user = user
-        instance.listing_type = 'found'
-        instance.status = 'active'
-        
-        if commit:
-            instance.save()
-        return instance

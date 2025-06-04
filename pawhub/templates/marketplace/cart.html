@@ -31,7 +31,7 @@
                             {% if item.marketplace_item %}
                                 <h5 class="card-title">{{ item.marketplace_item.name }}</h5>
                                 <p class="card-text">
-                                    <strong>Price:</strong> ${{ item.marketplace_item.price }}<br>
+                                    <strong>Price:</strong> ₹{{ item.marketplace_item.price }}<br>
                                     <strong>Quantity:</strong> {{ item.quantity }}<br>
                                     <strong>Seller:</strong> {{ item.marketplace_item.shop_owner.username }}
                                 </p>
@@ -39,7 +39,7 @@
                             {% elif item.listing %}
                                 <h5 class="card-title">{{ item.listing.pet.name }}</h5>
                                 <p class="card-text">
-                                    <strong>Price:</strong> ${{ item.listing.pet.price }}<br>
+                                    <strong>Price:</strong> ₹{{ item.listing.pet.price }}<br>
                                     <strong>Type:</strong> {{ item.listing.pet.get_type_display }}<br>
                                     <strong>Seller:</strong> {{ item.listing.pet.owner.username }}
                                 </p>
@@ -60,7 +60,7 @@
                 <h5 class="card-title">Cart Summary</h5>
                 <p class="card-text">
                     <strong>Total Items:</strong> {{ cart.items.count }}<br>
-                    <strong>Total Price:</strong> ${{ cart.total_price|default:"0.00" }}
+                    <strong>Total Price:</strong> ₹{{ cart.total_price|default:"0.00" }}
                 </p>
                 <a href="{% url 'marketplace:marketplace_item_list' %}" class="btn btn-primary">Continue Shopping</a>
                 {% if cart.items.exists %}

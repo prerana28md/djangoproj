@@ -27,7 +27,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ listing.pet.name }}</h5>
                         <p class="card-text text-muted">{{ listing.pet.get_type_display }} - {{ listing.pet.breed }}</p>
-                        <p class="card-text"><strong>${{ listing.pet.price }}</strong></p>
+                        <p class="card-text"><strong>₹{{ listing.pet.price }}</strong></p>
                         <p class="card-text">{{ listing.pet.description|truncatechars:100 }}</p>
                     </div>
                     

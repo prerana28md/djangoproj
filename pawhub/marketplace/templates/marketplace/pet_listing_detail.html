@@ -46,7 +46,7 @@
             <div class="card">
                 <div class="card-body">
                     <h3 class="card-title">Price</h3>
-                    <h2 class="text-primary mb-4">${{ listing.pet.price }}</h2>
+                    <h2 class="text-primary mb-4">₹{{ listing.pet.price }}</h2>
                     
                     {% if user.is_authenticated and user != listing.pet.owner %}
                         <form method="post" action="{% url 'marketplace:add_to_cart' listing.pk %}" class="mb-3">

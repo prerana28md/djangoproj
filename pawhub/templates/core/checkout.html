@@ -7,38 +7,42 @@
 <div class="container py-5">
     <div class="row">
         <div class="col-md-8">
-            <div class="card shadow-sm">
+            <div class="card mb-4">
                 <div class="card-body">
-                    <h2 class="card-title mb-4">Checkout</h2>
+                    <h4 class="mb-4">Checkout</h4>
                     <form method="post">
                         {% csrf_token %}
+                        
                         <div class="mb-3">
                             <label for="{{ form.shipping_address.id_for_label }}" class="form-label">Shipping Address</label>
                             {{ form.shipping_address }}
                             {% if form.shipping_address.errors %}
-                                <div class="invalid-feedback d-block">
+                                <div class="text-danger">
                                     {{ form.shipping_address.errors }}
                                 </div>
                             {% endif %}
                         </div>
+
                         <div class="mb-3">
                             <label for="{{ form.payment_method.id_for_label }}" class="form-label">Payment Method</label>
                             {{ form.payment_method }}
                             {% if form.payment_method.errors %}
-                                <div class="invalid-feedback d-block">
+                                <div class="text-danger">
                                     {{ form.payment_method.errors }}
                                 </div>
                             {% endif %}
                         </div>
+
                         <div class="mb-3">
                             <label for="{{ form.notes.id_for_label }}" class="form-label">Order Notes (Optional)</label>
                             {{ form.notes }}
                             {% if form.notes.errors %}
-                                <div class="invalid-feedback d-block">
+                                <div class="text-danger">
                                     {{ form.notes.errors }}
                                 </div>
                             {% endif %}
                         </div>
+
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-shopping-cart me-2"></i>Place Order
                         </button>
@@ -46,34 +50,28 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-4">
-            <div class="card shadow-sm">
+            <div class="card">
                 <div class="card-body">
-                    <h3 class="card-title mb-4">Order Summary</h3>
-                    {% for cart_item in cart.items.all %}
-                        <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-4">Order Summary</h4>
+                    {% for item in cart.items.all %}
+                        <div class="d-flex justify-content-between mb-2">
                             <div>
-                                {% if cart_item.marketplace_item %}
-                                    <h6 class="mb-0">{{ cart_item.marketplace_item.name }}</h6>
-                                    <small class="text-muted">Quantity: {{ cart_item.quantity }}</small>
-                                {% elif cart_item.listing %}
-                                    <h6 class="mb-0">{{ cart_item.listing.pet.name }}</h6>
-                                    <small class="text-muted">Pet for Sale</small>
+                                {% if item.marketplace_item %}
+                                    {{ item.marketplace_item.name }}
+                                {% elif item.listing %}
+                                    {{ item.listing.pet.name }}
                                 {% endif %}
+                                <small class="text-muted d-block">Qty: {{ item.quantity }}</small>
                             </div>
-                            <div class="text-end">
-                                {% if cart_item.marketplace_item %}
-                                    <span class="fw-bold">${{ cart_item.marketplace_item.price|floatformat:2 }}</span>
-                                {% elif cart_item.listing %}
-                                    <span class="fw-bold">${{ cart_item.listing.pet.price|floatformat:2 }}</span>
-                                {% endif %}
-                            </div>
+                            <div>₹{{ item.total_price }}</div>
                         </div>
                     {% endfor %}
                     <hr>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Total</h5>
-                        <h5 class="mb-0">${{ cart.total_price|floatformat:2 }}</h5>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong>₹{{ cart.total_price }}</strong>
                     </div>
                 </div>
             </div>

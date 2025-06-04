@@ -23,7 +23,7 @@ class MarketplaceItemForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         if self.user:
-            instance.seller = self.user
+            instance.shop_owner = self.user  # fixed field name
         if commit:
             instance.save()
-        return instance 
+        return instance

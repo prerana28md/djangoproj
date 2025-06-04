@@ -22,7 +22,7 @@
                 <h5 class="card-title">{{ item.name }}</h5>
                 <p class="card-text">
                     <strong>Category:</strong> {{ item.get_category_display }}<br>
-                    <strong>Price:</strong> ${{ item.price }}<br>
+                    <strong>Price:</strong> ₹{{ item.price }}<br>
                     <strong>Seller:</strong> {{ item.seller.username }}
                 </p>
                 <p class="card-text">{{ item.description|truncatewords:20 }}</p>

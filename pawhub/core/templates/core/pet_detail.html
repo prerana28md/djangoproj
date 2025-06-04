@@ -30,7 +30,7 @@
                     <p><i class="fas fa-birthday-cake"></i> Age: {{ pet.age }} years old</p>
                     <p><i class="fas fa-venus-mars"></i> Gender: {{ pet.get_gender_display }}</p>
                     {% if pet.type == 'sale' %}
-                    <p><i class="fas fa-tag"></i> Price: ${{ listing.price }}</p>
+                    <p><i class="fas fa-tag"></i> Price: ₹{{ listing.price }}</p>
                     {% endif %}
                 </div>
                 <div class="pet-description">

@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+
+{% block title %}My Lost Pets{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>My Lost Pets</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'pets:pet_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Pet
+            </a>
+        </div>
+    </div>
+
+    {% if lost_pets %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for pet in lost_pets %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if pet.image %}
+                            <img src="{{ pet.image.url }}" class="card-img-top" alt="{{ pet.name }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="fas fa-paw fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ pet.name }}</h5>
+                            <p class="card-text">
+                                <strong>Species:</strong> {{ pet.get_species_display }}<br>
+                                <strong>Breed:</strong> {{ pet.breed }}<br>
+                                <strong>Age:</strong> {{ pet.age }} years<br>
+                                <strong>Location:</strong> {{ pet.location }}
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'pets:pet_detail' pet.pk %}" class="btn btn-info">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </a>
+                                <a href="{% url 'pets:mark_pet_found' pet.pk %}" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Mark Found
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            Lost on: {{ pet.created_at|date:"F j, Y" }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> You haven't reported any lost pets yet.
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 
